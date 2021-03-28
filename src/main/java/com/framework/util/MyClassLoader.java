@@ -61,25 +61,22 @@ public class MyClassLoader {
         }
 
         File file = new File(url);
-        file.listFiles(new FileFilter() {
-
-            public boolean accept(File chiFile) {
-                if(chiFile.isDirectory()){
-                    findClassLocal(packName+"."+chiFile.getName());
-                }
-                if(chiFile.getName().endsWith(".class")){
-                    Class<?> clazz = null;
-                    try {
-                        clazz = classLoader.loadClass(packName + "." + chiFile.getName().replace(".class", ""));
-                    } catch (ClassNotFoundException e) {
-                        e.printStackTrace();
-                    }
-                    System.out.println(chiFile);
-                    eleStrategyList.add(clazz);
-                    return true;
-                }
-                return false;
+        file.listFiles((File chiFile) -> {
+            if(chiFile.isDirectory()){
+                findClassLocal(packName+"."+chiFile.getName());
             }
+            if(chiFile.getName().endsWith(".class")){
+                Class<?> clazz = null;
+                try {
+                    clazz = classLoader.loadClass(packName + "." + chiFile.getName().replace(".class", ""));
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+                System.out.println(chiFile);
+                eleStrategyList.add(clazz);
+                return true;
+            }
+            return false;
         });
 
     }

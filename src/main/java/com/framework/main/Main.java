@@ -35,6 +35,10 @@ public class Main {
                         e.printStackTrace();
                     }
                 }
+                if (x.isAnnotationPresent(Mapper.class)) {
+                    // 是mapper，添加到容器，mapper是数据库的映射器，是个接口，需要实现才能注入容器
+                    
+                }
             }
         });
         // 扫描容器，扫描被@Autowired注解的字段，并注入
