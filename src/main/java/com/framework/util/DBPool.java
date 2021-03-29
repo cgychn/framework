@@ -55,17 +55,13 @@ public class DBPool {
 		//根据给定的连接池大小初始化连接
 		System.out.println("初始化连接池");
 		try {
-			
 			Class.forName("com.mysql.jdbc.Driver");
 			for (int i = 0 ; i < DBPool.poolSize ; i ++) {
-				
 				//添加连接到连接池
 				DBPool.connPool.add(
 							DriverManager.getConnection("jdbc:mysql://"+host+":"+port+"/"+dbName , dbUsername , dbPassword)
 						);
-				
 			}
-			
 		} catch (SQLException e) {
 			// TODO: handle exception
 			e.printStackTrace();

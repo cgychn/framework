@@ -45,6 +45,7 @@ public class MyFrameworkContext {
         return null;
     }
 
+    // 默认驼峰
     private static String firstCharLowerCase (String val) {
         char[] chars = val.toCharArray();
         chars[0] = (chars[0] + "").toLowerCase().toCharArray()[0];
