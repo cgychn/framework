@@ -6,7 +6,7 @@ import com.framework.ioc.MapperInjector;
 import com.framework.ioc.ObjectAssembler;
 import com.framework.ioc.ServiceInjector;
 import com.framework.test.MySupperServiceImp1;
-import com.framework.util.MyClassLoader;
+import com.framework.context.MyClassLoader;
 
 import java.util.List;
 
