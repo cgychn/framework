@@ -29,7 +29,6 @@ public class DBTool {
     }
 
     public static <T> T queryOne (String sql, Class<T> t) throws SQLException {
-        Connection connection = TransactionManager.getCurrentConnection(true);
         List<T> res = query(sql, t);
         return res.size() > 0 ? res.get(0) : null;
     }
