@@ -32,12 +32,13 @@ public class MyFrameworkContext {
 //        System.out.println("name :" + name);
         for (IocEntity iocEntity : myContainer) {
 //            System.out.println("ioc type :" + iocEntity.getType());
-            if (cls == iocEntity.getType() && name.equals(iocEntity.getName())) {
-                // 直接获取
-                return (T) iocEntity.getObject(iocEntity.getType());
-            }
-            if (Arrays.stream(iocEntity.getType().getInterfaces()).filter(x -> { return x == cls; }).findAny().isPresent()
-                    && firstCharLowerCase(iocEntity.getType().getSimpleName()).equals(name)) {
+            if (
+                    (cls == iocEntity.getType() && name.equals(iocEntity.getName()))
+                    || (
+                            Arrays.stream(iocEntity.getType().getInterfaces()).filter(x -> { return x == cls; }).findAny().isPresent()
+                                    && firstCharLowerCase(iocEntity.getType().getSimpleName()).equals(name)
+                    )
+            ) {
                 return (T) iocEntity.getObject(iocEntity.getType());
             }
         }
