@@ -11,7 +11,7 @@ import java.util.List;
 public interface TestMapper {
 
     @Query(sql = "select user_name as userName, login_name as loginName, password from t_user")
-    List getUsers();
+    List<User> getUsers();
 
     @Modifying
     @Query(sql = "insert into t_user (login_name, password) values (#{userName}, #{pwd})")

@@ -1,4 +1,4 @@
-package com.framework.context;
+package com.framework.ioc;
 
 public class IocEntity {
 

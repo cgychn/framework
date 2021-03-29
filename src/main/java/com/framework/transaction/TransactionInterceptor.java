@@ -1,4 +1,4 @@
-package com.framework.context;
+package com.framework.transaction;
 
 import com.framework.annotation.Transaction;
 import net.sf.cglib.proxy.Enhancer;
@@ -6,7 +6,6 @@ import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
 
 import java.lang.reflect.Method;
-import java.sql.SQLException;
 
 public class TransactionInterceptor implements MethodInterceptor {
 
