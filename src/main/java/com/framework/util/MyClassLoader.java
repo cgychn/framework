@@ -72,7 +72,7 @@ public class MyClassLoader {
                 } catch (ClassNotFoundException e) {
                     e.printStackTrace();
                 }
-                System.out.println(chiFile);
+//                System.out.println(chiFile);
                 eleStrategyList.add(clazz);
                 return true;
             }
@@ -87,7 +87,7 @@ public class MyClassLoader {
      */
     private static void findClassJar(final String packName){
         String pathName = packName.replace(".", "/");
-        System.out.println(packName + ",," + pathName);
+//        System.out.println(packName + ",," + pathName);
         JarFile jarFile  = null;
         try {
             URL url = classLoader.getResource(pathName);
@@ -98,7 +98,7 @@ public class MyClassLoader {
         }
 
         Enumeration<JarEntry> jarEntries = jarFile.entries();
-        System.out.println(jarEntries);
+//        System.out.println(jarEntries);
         while (jarEntries.hasMoreElements()) {
             JarEntry jarEntry = jarEntries.nextElement();
             String jarEntryName = jarEntry.getName();
@@ -120,7 +120,7 @@ public class MyClassLoader {
                     } catch (ClassNotFoundException e) {
                         e.printStackTrace();
                     }
-                    System.out.println("add : " + clazz);
+//                    System.out.println("add : " + clazz);
                     eleStrategyList.add(clazz);
                 }
             }

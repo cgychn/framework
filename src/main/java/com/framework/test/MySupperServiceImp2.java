@@ -13,4 +13,9 @@ public class MySupperServiceImp2 implements MySupperService2 {
     public int test2(int bb) {
         return 0;
     }
+
+    @Override
+    public int testTx(String aa, String bb, int cc) {
+        return 0;
+    }
 }

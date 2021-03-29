@@ -10,4 +10,9 @@ public class ServiceImp3 implements MySupperService {
     public String test2(String bb) {
         return null;
     }
+
+    @Override
+    public int testTx(String aa, String bb, int cc) {
+        return 0;
+    }
 }
