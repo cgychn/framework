@@ -1,0 +1,2 @@
+（1）实现sql的parser，实现com.framework.db.parser.SqlParamParser接口，实现 generateSql 方法，完成：
+select * from user where user_id = #{userId} and create_time = #{createTime, jdbcType = TIMESTAMP} 中 userId 和 createTime 的自动装配，以及将createTime表示为TIMESTAMP类型（在ParamNameSqlParamParser类中实现）
