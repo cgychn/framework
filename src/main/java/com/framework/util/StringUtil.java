@@ -2,6 +2,12 @@ package com.framework.util;
 
 public class StringUtil {
 
+    /**
+     * @param rawString 待处理字符串
+     * @param replaceWhat 替换什么
+     * @param replaceTo 替换成什么
+     * @return
+     */
     public static String replaceFirstWithOutReg (String rawString, String replaceWhat, String replaceTo) {
         for (int i = 0; i < rawString.length(); i++) {
             if (rawString.charAt(i) == replaceWhat.charAt(0)) {
@@ -14,8 +20,9 @@ public class StringUtil {
                     if (j == replaceWhat.length() - 1) {
                         // 匹配到了
                         // 字符串的下标是 i 到 j
-                        rawString = rawString.substring(i, j + 1);
+                        rawString = rawString.substring(0, i) + rawString.substring(i + j + 1);
                         StringBuffer stringBuffer = new StringBuffer(rawString);
+                        System.out.println(stringBuffer);
                         for (int k = replaceTo.length() - 1; k >= 0; k--) {
                             stringBuffer.insert(i, replaceTo.charAt(k));
                         }
@@ -25,6 +32,10 @@ public class StringUtil {
             }
         }
         return rawString;
+    }
+
+    public static void main (String[] args ) {
+        replaceFirstWithOutReg("select user_name as userName, login_name as loginName, password from t_user where user_name like '%#{userName}%'", "#{userName}", "?");
     }
 
 }
