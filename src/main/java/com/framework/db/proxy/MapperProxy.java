@@ -28,7 +28,8 @@ public class MapperProxy implements InvocationHandler {
         // 构造一个 参数：值 的结构
         for (int i = 0 ; i < parameters.length ; i++) {
             sql = sql.replace(
-                    "#{" + parameters[i].getAnnotation(Param.class).value() + "}", "'" + args[i].toString() + "'"
+                    "#{" + parameters[i].getAnnotation(Param.class).value() + "}",
+                    "'" + args[i].toString() + "'"
             );
         }
         System.out.println(sql);
