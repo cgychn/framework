@@ -24,14 +24,13 @@
   <component name="ChangeListManager">
     <list default="true" id="09c225f9-2e68-4ff5-a9ae-289a778d39c7" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/framework/context/IocEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/framework/ioc/IocEntity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/framework/context/MyFrameworkContext.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/framework/context/MyFrameworkContext.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/framework/context/TransactionInterceptor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/framework/transaction/TransactionInterceptor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/framework/context/TransactionManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/framework/transaction/TransactionManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/framework/main/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/framework/main/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/framework/db/DBTool.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/framework/db/DBTool.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/framework/db/parser/ParamNameSqlParamParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/framework/db/parser/ParamNameSqlParamParser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/framework/db/parser/SqlParamParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/framework/db/parser/SqlParamParser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/framework/db/proxy/MapperProxy.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/framework/db/proxy/MapperProxy.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/framework/test/MyServiceImp4.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/framework/test/MyServiceImp4.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/framework/test/MySupperServiceImp1.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/framework/test/MySupperServiceImp1.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/framework/test/TestMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/framework/test/TestMapper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/framework/util/DBTool.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/framework/db/DBTool.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -77,7 +76,7 @@
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
     <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1616939273306" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../libra/web/backend" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="nodejs_package_manager_path" value="npm" />
@@ -111,7 +110,20 @@
       <module name="framework" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="com.framework.db.*" />
+          <option name="PATTERN" value="com.framework.db.parser.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ParamNameSqlParamParser" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.framework.db.parser.ParamNameSqlParamParser" />
+      <module name="framework" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.framework.db.parser.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -147,10 +159,12 @@
       <item itemvalue="Application.Test" />
       <item itemvalue="Application.Main" />
       <item itemvalue="Application.MyClassLoader" />
+      <item itemvalue="Application.ParamNameSqlParamParser" />
     </list>
     <recent_temporary>
       <list>
         <item itemvalue="Application.Main" />
+        <item itemvalue="Application.ParamNameSqlParamParser" />
         <item itemvalue="Application.MyClassLoader" />
         <item itemvalue="Application.Test" />
       </list>
@@ -170,6 +184,8 @@
       <workItem from="1616824193450" duration="9979000" />
       <workItem from="1616902203513" duration="17579000" />
       <workItem from="1616980180628" duration="30585000" />
+      <workItem from="1617018020032" duration="2335000" />
+      <workItem from="1617066192020" duration="23403000" />
     </task>
     <servers />
   </component>
@@ -186,36 +202,37 @@
         </entry>
       </map>
     </option>
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="765" y="225" key="#com.intellij.ide.util.MemberChooser" timestamp="1617015379123">
+    <state x="765" y="225" key="#com.intellij.ide.util.MemberChooser" timestamp="1617104475656">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="765" y="225" key="#com.intellij.ide.util.MemberChooser/0.0.1920.1040@0.0.1920.1040" timestamp="1617015379123" />
+    <state x="765" y="225" key="#com.intellij.ide.util.MemberChooser/0.0.1920.1040@0.0.1920.1040" timestamp="1617104475656" />
     <state x="658" y="365" key="#com.intellij.refactoring.memberPullUp.PullUpDialog" timestamp="1616991968337">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="658" y="365" key="#com.intellij.refactoring.memberPullUp.PullUpDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1616991968337" />
-    <state x="740" y="274" key="FileChooserDialogImpl" timestamp="1616980238568">
+    <state x="740" y="274" key="FileChooserDialogImpl" timestamp="1617067344350">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="740" y="274" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1616980238568" />
-    <state width="1877" height="278" key="GridCell.Tab.0.bottom" timestamp="1617017474405">
+    <state x="740" y="274" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1617067344350" />
+    <state width="1877" height="265" key="GridCell.Tab.0.bottom" timestamp="1617107631094">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="278" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1617017474405" />
-    <state width="1877" height="278" key="GridCell.Tab.0.center" timestamp="1617017474405">
+    <state width="1877" height="265" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1617107631094" />
+    <state width="1877" height="265" key="GridCell.Tab.0.center" timestamp="1617107631094">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="278" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1617017474405" />
-    <state width="1877" height="278" key="GridCell.Tab.0.left" timestamp="1617017474405">
+    <state width="1877" height="265" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1617107631094" />
+    <state width="1877" height="265" key="GridCell.Tab.0.left" timestamp="1617107631094">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="278" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1617017474405" />
-    <state width="1877" height="278" key="GridCell.Tab.0.right" timestamp="1617017474405">
+    <state width="1877" height="265" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1617107631094" />
+    <state width="1877" height="265" key="GridCell.Tab.0.right" timestamp="1617107631094">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="278" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1617017474405" />
+    <state width="1877" height="265" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1617107631094" />
     <state x="461" y="164" key="SettingsEditor" timestamp="1616980241080">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
@@ -224,14 +241,14 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="662" y="252" width="596" height="536" key="find.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1617003453081" />
-    <state x="616" y="240" key="run.anything.popup" timestamp="1617010556848">
+    <state x="616" y="240" key="run.anything.popup" timestamp="1617085073218">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="616" y="240" key="run.anything.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1617010556848" />
-    <state x="623" y="225" width="672" height="678" key="search.everywhere.popup" timestamp="1616984279104">
+    <state x="616" y="240" key="run.anything.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1617085073218" />
+    <state x="623" y="225" width="672" height="678" key="search.everywhere.popup" timestamp="1617082363529">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="623" y="225" width="672" height="678" key="search.everywhere.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1616984279104" />
+    <state x="623" y="225" width="672" height="678" key="search.everywhere.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1617082363529" />
   </component>
   <component name="antWorkspaceConfiguration">
     <option name="IS_AUTOSCROLL_TO_SOURCE" value="false" />

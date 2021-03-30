@@ -10,8 +10,8 @@ import java.util.List;
 @Mapper
 public interface TestMapper {
 
-    @Query(sql = "select user_name as userName, login_name as loginName, password from t_user")
-    List<User> getUsers();
+    @Query(sql = "select user_name as userName, login_name as loginName, password from t_user where user_name like '%#{userName}%'")
+    List<User> getUsers(@Param("userName") String userName);
 
     @Modifying
     @Query(sql = "insert into t_user (login_name, password) values (#{userName}, #{pwd})")

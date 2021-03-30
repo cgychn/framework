@@ -4,6 +4,6 @@ import java.lang.reflect.Parameter;
 
 public interface SqlParamParser {
 
-    String generateSql (String rawSql, Parameter[] parameters, Object[] args);
+    SqlParamParserResult generateSql (String rawSql, Parameter[] parameters, Object[] args);
 
 }

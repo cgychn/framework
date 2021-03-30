@@ -5,6 +5,8 @@ import com.framework.annotation.Modifying;
 import com.framework.annotation.Param;
 import com.framework.annotation.Query;
 import com.framework.db.DBTool;
+import com.framework.db.parser.ParamNameSqlParamParser;
+import com.framework.db.parser.SqlParamParserResult;
 import com.framework.test.User;
 
 import java.lang.reflect.*;
@@ -26,15 +28,23 @@ public class MapperProxy implements InvocationHandler {
         // 用args 匹配sql中的占位符
         Parameter[] parameters = method.getParameters();
         // 构造一个 参数：值 的结构
-        for (int i = 0 ; i < parameters.length ; i++) {
-            sql = sql.replace(
-                    "#{" + parameters[i].getAnnotation(Param.class).value() + "}",
-                    "'" + args[i].toString() + "'"
-            );
-        }
+//        for (int i = 0 ; i < parameters.length ; i++) {
+//            sql = sql.replace(
+//                    "#{" + parameters[i].getAnnotation(Param.class).value() + "}",
+//                    "'" + args[i].toString() + "'"
+//            );
+//        }
+        // 这里换成prepareStatement，需要将注解上的sql解析为prepareStatement类型
+        SqlParamParserResult sqlParamParserResult = new ParamNameSqlParamParser()
+                .generateSql(sql, parameters, args);
+        sql = sqlParamParserResult.getDesSql();
         System.out.println(sql);
         if (method.isAnnotationPresent(Modifying.class)) {
-            return DBTool.update(sql);
+            return DBTool.updateUsePrepareStatement(
+                    sql,
+                    sqlParamParserResult.getSqlArgs(),
+                    sqlParamParserResult.getJdbcTypes()
+            );
         } else {
             Type t = null;
             Type returnType = method.getGenericReturnType();
@@ -48,12 +58,27 @@ public class MapperProxy implements InvocationHandler {
             // 返回列表或者单个结果
             if (!(returnType instanceof List || returnType instanceof Set)) {
                 if (t != null) {
-                    return DBTool.query(sql, Class.forName(t.getTypeName()));
+                    return DBTool.queryUsePrepareStatement(
+                            sql,
+                            sqlParamParserResult.getSqlArgs(),
+                            sqlParamParserResult.getJdbcTypes(),
+                            Class.forName(t.getTypeName())
+                    );
                 } else {
-                    return DBTool.query(sql, HashMap.class);
+                    return DBTool.queryUsePrepareStatement(
+                            sql,
+                            sqlParamParserResult.getSqlArgs(),
+                            sqlParamParserResult.getJdbcTypes(),
+                            HashMap.class
+                    );
                 }
             } else {
-                return DBTool.queryOne(sql, Class.forName(returnType.getTypeName()));
+                return DBTool.queryOneUsePrepareStatement(
+                        sql,
+                        sqlParamParserResult.getSqlArgs(),
+                        sqlParamParserResult.getJdbcTypes(),
+                        Class.forName(returnType.getTypeName())
+                );
             }
         }
     }

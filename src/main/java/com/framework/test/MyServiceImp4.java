@@ -28,8 +28,8 @@ public class MyServiceImp4 implements MySupperService2 {
     public int testTx (String aa, String bb, int cc) {
         System.out.println(aa + bb + cc);
 
-        List<User> userList = mapper.getUsers();
-        System.out.println(userList);
+//        List<User> userList = mapper.getUsers();
+//        System.out.println(userList);
         return 0;
     }
 }

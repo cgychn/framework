@@ -31,7 +31,7 @@ public class MySupperServiceImp1 implements MySupperService {
     public int testTx(String aa, String bb, int cc) throws Exception {
         System.out.println(aa + bb + cc);
 
-        List<User> userList = mapper.getUsers();
+        List<User> userList = mapper.getUsers("a");
         System.out.println(userList);
         for (int i = 0; i < 20 ; i++) {
             mapper.addUser("asd" + i, "123456");
