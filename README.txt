@@ -11,7 +11,8 @@
 （2）代理方法会在invoke该方法前创建一个connection放到ThreadLocal中，方法内部的sql都会复用ThreadLocal中的connection，出错回滚，不出错提交，实现事务
 
 
-new feature：
+新改进：
+
 （1）jdbc statement 换成 preparestatement
 （2）增加sql参数解析器
 （3）将connection换为连接池
