@@ -147,17 +147,20 @@ public class DBTool {
     private static PreparedStatement loadPrepareStatement (String sql, Object[] args, String[] jdbcTypes) throws SQLException {
         Connection connection = TransactionManager.getCurrentConnection(true);
         PreparedStatement statement = connection.prepareStatement(sql);
+        System.out.println(args[0].toString());
+        System.out.println("sql : " + sql);
         for (int i = 0; i < args.length ; i++) {
+            System.out.println(i);
             if (jdbcTypes[i] != null && !jdbcTypes[i].equals("")) {
                 statement.setObject(
                         i + 1,
-                        args[0],
+                        args[i],
                         JDBCType.valueOf(jdbcTypes[i])
                 );
             } else {
                 statement.setObject(
                         i + 1,
-                        args[0]
+                        args[i]
                 );
             }
         }

@@ -15,7 +15,6 @@ public class ParamNameSqlParamParser implements SqlParamParser {
     // 由于该sql语句最后会被转换成jdbc prepareStatement的sql语句（参数为？，所以需要对参数重新排序）
     @Override
     public SqlParamParserResult generateSql(String rawSql, Parameter[] rawParameters, Object[] rawArgs) {
-
         String regex = "\\#\\{([^}]*)\\}";
         // 到rawSql中匹配
         Pattern pattern = Pattern.compile(regex);
@@ -57,8 +56,8 @@ public class ParamNameSqlParamParser implements SqlParamParser {
         }
         SqlParamParserResult sqlParamParserResult = new SqlParamParserResult();
         sqlParamParserResult.setDesSql(rawSql);
-        sqlParamParserResult.setJdbcTypes(new String[destJDBCTypeStrings.size()]);
-        sqlParamParserResult.setSqlArgs(new Object[destArgs.size()]);
+        sqlParamParserResult.setJdbcTypes(destJDBCTypeStrings.toArray(new String[destJDBCTypeStrings.size()]));
+        sqlParamParserResult.setSqlArgs(destArgs.toArray(new Object[destArgs.size()]));
 //        System.out.println(rawSql);
 
         return sqlParamParserResult;
