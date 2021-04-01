@@ -1,6 +1,8 @@
 package com.framework.test;
 
-public class User {
+import java.io.Serializable;
+
+public class User implements Serializable {
 
     String userName;
     String password;
@@ -38,4 +40,5 @@ public class User {
                 ", loginName='" + loginName + '\'' +
                 '}';
     }
+
 }

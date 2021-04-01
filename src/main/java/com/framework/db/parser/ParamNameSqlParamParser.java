@@ -46,7 +46,7 @@ public class ParamNameSqlParamParser implements SqlParamParser {
                         destArgs.add(rawArgs[i]);
                         destJDBCTypeStrings.add(paramJDBCType);
                         // 后将这个参数的位置替换为？
-                        System.out.println(rawSql + ",,,," + paramStringInSql);
+//                        System.out.println(rawSql + ",,,," + paramStringInSql);
                         rawSql = StringUtil.replaceFirstWithOutReg(rawSql, paramStringInSql, "?");
                         System.out.println(rawSql);
                         break;
