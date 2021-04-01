@@ -1,10 +1,22 @@
 package com.framework.transaction;
 
+import com.framework.util.DBPool;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class TransactionManager {
+
+    // 连接池
+    private static DBPool dbPool = DBPool.getInstance(
+            20,
+            "root",
+            "123456",
+            "ams?serverTimezone=GMT%2B8&useSSL=false",
+            3306,
+            "localhost"
+    );
 
     static ThreadLocal<Connection> connectionThreadLocal = new ThreadLocal<>();
 
@@ -20,7 +32,7 @@ public class TransactionManager {
             try {
                 Class.forName("com.mysql.jdbc.Driver");
                 // 读配置文件
-                Connection newConnection = DriverManager.getConnection("jdbc:mysql://localhost:3306/ams?serverTimezone=GMT%2B8&useSSL=false", "root", "123456");
+                Connection newConnection = dbPool.getConnFromPool();
                 connectionThreadLocal.set(newConnection);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -32,7 +44,7 @@ public class TransactionManager {
     public static void closeConnection () {
         Connection connection = getCurrentConnection(false);
         try {
-            connection.close();
+            dbPool.restoreConnToPool(connection);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
