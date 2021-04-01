@@ -1,14 +1,10 @@
 package com.framework.db.proxy;
 
-import com.alibaba.fastjson.JSONArray;
 import com.framework.annotation.Modifying;
-import com.framework.annotation.Param;
 import com.framework.annotation.Query;
 import com.framework.db.DBTool;
 import com.framework.db.parser.ParamNameSqlParamParser;
 import com.framework.db.parser.SqlParamParserResult;
-import com.framework.test.User;
-
 import java.lang.reflect.*;
 import java.util.HashMap;
 import java.util.List;
