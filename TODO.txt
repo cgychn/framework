@@ -1,2 +1,13 @@
 （1）实现sql的parser，实现com.framework.db.parser.SqlParamParser接口，实现 generateSql 方法，完成：
-select * from user where user_id = #{userId} and create_time = #{createTime, jdbcType = TIMESTAMP} 中 userId 和 createTime 的自动装配，以及将createTime表示为TIMESTAMP类型（在ParamNameSqlParamParser类中实现）
+select * from user where user_id = #{userId} and create_time = #{createTime, jdbcType = TIMESTAMP} 中 userId 和 createTime 的自动装配，以及将createTime表示为TIMESTAMP类型（在ParamNameSqlParamParser类中实现）（done）
+
+（2）增加query注解中sql表达式对运算表达式的支持，如：${(pageNum - 1) * pageSize}（todo）
+
+（3）使用socket实现rpc框架【消费者，注册中心（需要支持拓展性，可能会先使用zookeeper作为注册中心，后续自己实现），服务提供者】（todo）
+【流程：
+（启动阶段）
+1.注入阶段扫描被 @RPCService 注解的类，并注入。
+2.注入以后，向注册中心注册自己（自己服务的名称（比如一个jar包就是一个独立的服务），服务下的接口，服务的IP，服务端口）。
+（调用阶段）
+1.消费者向注册中心索取被调用服务的相关信息。
+2.获取到信息后，消费者和提供者通信。】
