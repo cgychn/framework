@@ -6,7 +6,7 @@ import com.framework.annotation.Transaction;
 
 import java.util.List;
 
-@Service
+@Service(name = "mySupperServiceImp1")
 public class MySupperServiceImp1 implements MySupperService {
 
     @AutoWired
@@ -27,7 +27,6 @@ public class MySupperServiceImp1 implements MySupperService {
     }
 
     @Override
-    @Transaction
     public int testTx(String aa, String bb, int cc) throws Exception {
         System.out.println(aa + bb + cc);
 
