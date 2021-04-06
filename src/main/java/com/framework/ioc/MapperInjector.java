@@ -15,6 +15,16 @@ import java.lang.reflect.Proxy;
 
 public class MapperInjector implements Injector {
 
+    static MapperInjector mapperInjector = new MapperInjector();
+
+    private MapperInjector () {
+
+    }
+
+    public static MapperInjector getInstance() {
+        return mapperInjector;
+    }
+
     @Override
     public void inject(Class cls) {
         if (cls.isAnnotationPresent(Mapper.class)) {

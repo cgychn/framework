@@ -4,18 +4,17 @@ import com.framework.annotation.RPCService;
 import com.framework.annotation.Transaction;
 import com.framework.context.MyFrameworkContext;
 import com.framework.rpc.register.ZookeeperRegister;
-import com.framework.rpc.register.entiy.RegisterClassEntity;
-import com.framework.rpc.register.entiy.RegisterMethodEntity;
 import com.framework.transaction.TransactionInterceptor;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class RPCServiceInjector implements Injector {
 
+    static RPCServiceInjector rpcServiceInjector = new RPCServiceInjector();
+
+    public static Injector getInstance() {
+        return rpcServiceInjector;
+    }
 
     @Override
     public void inject(Class cls) {
@@ -45,7 +44,7 @@ public class RPCServiceInjector implements Injector {
                 }
 
                 // 注册
-                new ZookeeperRegister().registerToRegistry(cls);
+                ZookeeperRegister.getInstance().registerToRegistry(cls);
 
             } catch (Exception e) {
                 e.printStackTrace();

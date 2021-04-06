@@ -9,6 +9,12 @@ import java.lang.reflect.Method;
 
 public class ServiceInjector implements Injector {
 
+    static ServiceInjector serviceInjector = new ServiceInjector();
+
+    public static Injector getInstance() {
+        return serviceInjector;
+    }
+
     @Override
     public void inject(Class cls) {
         if (cls.isAnnotationPresent(Service.class)) {

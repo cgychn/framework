@@ -2,7 +2,10 @@ package com.framework.rpc.register;
 
 import com.framework.rpc.register.entiy.RegisterClassEntity;
 import com.framework.rpc.register.entiy.RegisterMethodEntity;
+import com.framework.rpc.register.registry.Registry;
 import com.framework.rpc.register.registry.ZookeeperRegistry;
+import org.apache.zookeeper.KeeperException;
+import org.apache.zookeeper.ZooKeeper;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -11,20 +14,28 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class ZookeeperRegister implements Register {
+
+    static ZookeeperRegister zookeeperRegister = new ZookeeperRegister();
+
+    private ZookeeperRegister () {
+
+    }
+
+    public static ZookeeperRegister getInstance() {
+        return zookeeperRegister;
+    }
+
     @Override
     public void registerToRegistry(Class cls) {
         Method[] methods = cls.getDeclaredMethods();
         // 向注册中心注册当前服务
         RegisterClassEntity registerClassEntity = new RegisterClassEntity();
         registerClassEntity.setCurrentClassName(cls.getName());
+        // 这个类只能实现一个接口
         registerClassEntity.setInterfaceName(
-                String.join(
-                        ",",
-                        Arrays.asList(cls.getInterfaces())
-                                .stream()
-                                .map(x -> { return x.getName(); })
-                                .collect(Collectors.toList())
-                )
+                Arrays.asList(cls.getInterfaces())
+                        .stream()
+                        .map(x -> { return x.getName(); }).collect(Collectors.toList()).get(0)
         );
         List<RegisterMethodEntity> registerMethodEntities = new ArrayList<>();
         for (Method method : methods) {
@@ -37,11 +48,20 @@ public class ZookeeperRegister implements Register {
             registerMethodEntity.setMethodArgs(method.getParameters().length > 0
                     ? paramTypes.toArray(new String[paramTypes.size()])
                     : new String[0]);
+            registerMethodEntity.setReturnType(method.getReturnType().getName());
             registerMethodEntities.add(registerMethodEntity);
         }
         registerClassEntity.setMethodEntities(registerMethodEntities);
 
         System.out.println(registerClassEntity);
-        ZookeeperRegistry.doRegister(registerClassEntity);
+
+        try {
+            ZookeeperRegistry.getInstance().doRegister(registerClassEntity);
+        } catch (KeeperException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
     }
 }

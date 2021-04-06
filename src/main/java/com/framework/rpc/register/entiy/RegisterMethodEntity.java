@@ -8,6 +8,8 @@ public class RegisterMethodEntity {
 
     String methodArgs[];
 
+    Object returnType;
+
     public String getMethodName() {
         return methodName;
     }
@@ -22,6 +24,14 @@ public class RegisterMethodEntity {
 
     public void setMethodArgs(String[] methodArgs) {
         this.methodArgs = methodArgs;
+    }
+
+    public Object getReturnType() {
+        return returnType;
+    }
+
+    public void setReturnType(Object returnType) {
+        this.returnType = returnType;
     }
 
     @Override

@@ -23,9 +23,9 @@ public class Main {
         // 注入容器
         classes.forEach(x -> {
             if (!x.isAnonymousClass() && !x.isMemberClass()) {
-                new MapperInjector().inject(x);
-                new ServiceInjector().inject(x);
-                new RPCServiceInjector().inject(x);
+                MapperInjector.getInstance().inject(x);
+                ServiceInjector.getInstance().inject(x);
+                RPCServiceInjector.getInstance().inject(x);
             }
         });
         // 装配

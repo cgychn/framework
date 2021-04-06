@@ -25,9 +25,11 @@ public class RPCClient {
             System.out.println();
             System.out.println(size + 8);
             outputStream.write(longToBytes(size + 8));
-            outputStream.write(bs);
-            outputStream.flush();
-            outputStream.close();
+//            outputStream.write(bs);
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+            objectOutputStream.writeObject(user);
+            objectOutputStream.flush();
+            objectOutputStream.close();
             socket.close();
         } catch (IOException e) {
             e.printStackTrace();
