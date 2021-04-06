@@ -27,6 +27,21 @@ public class MyFrameworkContext {
         return get(cls, firstCharLowerCase(cls.getSimpleName()));
     }
 
+    /**
+     * 仅根据类获取相应的实例
+     * @param cls
+     * @param <T>
+     * @return
+     */
+    public static <T> T getJustByClass (Class<T> cls) {
+        for (IocEntity iocEntity : myContainer) {
+            if (cls == iocEntity.getType()) {
+                return (T) iocEntity.getObject(iocEntity.getType());
+            }
+        }
+        return null;
+    }
+
     public static <T> T get (Class<T> cls, String name) {
 //        System.out.println("cls :" + cls);
 //        System.out.println("name :" + name);
