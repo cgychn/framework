@@ -34,6 +34,17 @@ public class StringUtil {
         return rawString;
     }
 
+    /**
+     * 驼峰
+     * @param val
+     * @return
+     */
+    public static String firstCharLowerCase (String val) {
+        char[] chars = val.toCharArray();
+        chars[0] = (chars[0] + "").toLowerCase().toCharArray()[0];
+        return String.valueOf(chars);
+    }
+
     public static void main (String[] args ) {
         replaceFirstWithOutReg("select user_name as userName, login_name as loginName, password from t_user where user_name like '%#{userName}%'", "#{userName}", "?");
     }

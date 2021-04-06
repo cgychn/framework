@@ -55,13 +55,7 @@ public class ZookeeperRegister implements Register {
 
         System.out.println(registerClassEntity);
 
-        try {
-            ZookeeperRegistry.getInstance().doRegister(registerClassEntity);
-        } catch (KeeperException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        ZookeeperRegistry.getInstance().doRegister(registerClassEntity);
 
     }
 }

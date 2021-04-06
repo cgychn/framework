@@ -29,18 +29,22 @@ public class MapperInjector implements Injector {
     public void inject(Class cls) {
         if (cls.isAnnotationPresent(Mapper.class)) {
             // 是mapper，添加到容器，mapper是数据库的映射器，是个接口，需要实现才能注入容器
-            Object mapperInstance = new MapperProxy().bind(cls);
-            if (((Mapper) cls.getDeclaredAnnotation(Mapper.class)).name().equals("")) {
-                MyFrameworkContext.set(
-                        cls,
-                        cls.cast(mapperInstance)
-                );
-            } else {
-                MyFrameworkContext.set(
-                        cls,
-                        ((Mapper) cls.getDeclaredAnnotation(Mapper.class)).name(),
-                        cls.cast(mapperInstance)
-                );
+            try {
+                Object mapperInstance = new MapperProxy().bind(cls);
+                if (((Mapper) cls.getDeclaredAnnotation(Mapper.class)).name().equals("")) {
+                    MyFrameworkContext.set(
+                            cls,
+                            cls.cast(mapperInstance)
+                    );
+                } else {
+                    MyFrameworkContext.set(
+                            cls,
+                            ((Mapper) cls.getDeclaredAnnotation(Mapper.class)).name(),
+                            cls.cast(mapperInstance)
+                    );
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }

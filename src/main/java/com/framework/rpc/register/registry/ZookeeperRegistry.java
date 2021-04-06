@@ -104,7 +104,7 @@ public class ZookeeperRegistry implements Watcher, Registry {
     }
 
     @Override
-    public void doRegister(RegisterClassEntity registerClassEntity) throws KeeperException, InterruptedException {
+    public void doRegister(RegisterClassEntity registerClassEntity) {
         this.connect();
         // 将该服务内所有的接口、接口实现、方法都注册到zookeeper中
         for (RegisterMethodEntity method : registerClassEntity.getMethodEntities()) {

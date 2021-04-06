@@ -1,6 +1,7 @@
 package com.framework.context;
 
 import com.framework.ioc.IocEntity;
+import com.framework.util.StringUtil;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -10,21 +11,36 @@ public class MyFrameworkContext {
 
     public static Set<IocEntity> myContainer = new HashSet<>();
 
-    public static void set (Class cls, Object obj) {
+    public static void set (Class cls, Object obj) throws Exception {
         String[] clsParts = cls.getName().split("\\.");
-        set(cls, firstCharLowerCase(clsParts[clsParts.length - 1]), obj);
+        set(cls, StringUtil.firstCharLowerCase(clsParts[clsParts.length - 1]), obj);
     }
 
-    public static void set (Class cls, String name, Object obj) {
-        IocEntity iocEntity = new IocEntity();
-        iocEntity.setName(name);
-        iocEntity.setObject(obj);
-        iocEntity.setType(cls);
-        myContainer.add(iocEntity);
+    public static void set (Class cls, String name, Object obj) throws Exception {
+        // set之前先检查
+        if (checkBeanName(name)) {
+            IocEntity iocEntity = new IocEntity();
+            iocEntity.setName(name);
+            iocEntity.setObject(obj);
+            iocEntity.setType(cls);
+            myContainer.add(iocEntity);
+        } else {
+            throw new Exception("entity name repeat");
+        }
+    }
+
+    private static boolean checkBeanName (String name) {
+        for (IocEntity iocEntity : myContainer) {
+            if (iocEntity.getName().equals(name)) {
+                // 重复
+                return false;
+            }
+        }
+        return true;
     }
 
     public static <T> T get (Class<T> cls) {
-        return get(cls, firstCharLowerCase(cls.getSimpleName()));
+        return get(cls, StringUtil.firstCharLowerCase(cls.getSimpleName()));
     }
 
     /**
@@ -51,7 +67,7 @@ public class MyFrameworkContext {
                     (cls == iocEntity.getType() && name.equals(iocEntity.getName()))
                     || (
                             Arrays.stream(iocEntity.getType().getInterfaces()).filter(x -> { return x == cls; }).findAny().isPresent()
-                                    && firstCharLowerCase(iocEntity.getType().getSimpleName()).equals(name)
+                                    && StringUtil.firstCharLowerCase(iocEntity.getType().getSimpleName()).equals(name)
                     )
             ) {
                 return (T) iocEntity.getObject(iocEntity.getType());
@@ -60,12 +76,7 @@ public class MyFrameworkContext {
         return null;
     }
 
-    // 默认驼峰
-    private static String firstCharLowerCase (String val) {
-        char[] chars = val.toCharArray();
-        chars[0] = (chars[0] + "").toLowerCase().toCharArray()[0];
-        return String.valueOf(chars);
-    }
+
 
 
 }
