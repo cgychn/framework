@@ -22,6 +22,10 @@ public class RpcServer {
         }
     }
 
+    public static void startRPCServer () throws IOException {
+        RpcServer rpcServer = new RpcServer();
+    }
+
     // test
     public static void main(String[] args) {
         try {

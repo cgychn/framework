@@ -8,7 +8,7 @@ public class RegisterMethodEntity {
 
     String methodArgs[];
 
-    Object returnType;
+    String returnType;
 
     public String getMethodName() {
         return methodName;
@@ -26,20 +26,20 @@ public class RegisterMethodEntity {
         this.methodArgs = methodArgs;
     }
 
-    public Object getReturnType() {
+    public String getReturnType() {
         return returnType;
     }
 
-    public void setReturnType(Object returnType) {
+    public void setReturnType(String returnType) {
         this.returnType = returnType;
     }
 
     @Override
     public String toString() {
-        return "MethodEntity{" +
+        return "RegisterMethodEntity{" +
                 "methodName='" + methodName + '\'' +
                 ", methodArgs=" + Arrays.toString(methodArgs) +
+                ", returnType='" + returnType + '\'' +
                 '}';
     }
-
 }

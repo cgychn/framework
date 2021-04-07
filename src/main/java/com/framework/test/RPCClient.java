@@ -20,14 +20,15 @@ public class RPCClient {
             user.setPassword("asdwqqsdawd");
             System.out.println(user);
 
-            byte[] bs = ObjectToByte(user);
+            byte[] bs = ObjectToByte("user1user2");
             long size = bs.length;
             System.out.println();
             System.out.println(size + 8);
             outputStream.write(longToBytes(size + 8));
 //            outputStream.write(bs);
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
-            objectOutputStream.writeObject(user);
+            objectOutputStream.writeObject("user1");
+            objectOutputStream.writeObject("user2");
             objectOutputStream.flush();
             objectOutputStream.close();
             socket.close();

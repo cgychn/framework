@@ -2,9 +2,13 @@ package com.framework.rpc.register.registry;
 
 import com.framework.rpc.register.entiy.RegisterClassEntity;
 import com.framework.rpc.register.entiy.RegisterMethodEntity;
+import com.framework.rpc.register.entiy.RemoteClassEntity;
 import org.apache.zookeeper.*;
+import org.apache.zookeeper.data.Stat;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Random;
 
 
 /**
@@ -34,6 +38,8 @@ public class ZookeeperRegistry implements Watcher, Registry {
     private static ZooKeeper zooKeeper;
 
     private Object waiter = new Object();
+
+    private String serviceRootPath = "/myrpc";
 
     private static ZookeeperRegistry zookeeperRegistry = new ZookeeperRegistry();
 
@@ -103,12 +109,15 @@ public class ZookeeperRegistry implements Watcher, Registry {
 
     }
 
+    // 全新注册
     @Override
     public void doRegister(RegisterClassEntity registerClassEntity) {
-        this.connect();
+//        this.connect();
+        // 注册之前先递归删除其和其子节点
+        this.deleteRecursively(serviceRootPath + "/" + serviceName + "/providers/" + serviceIp + ":" + port);
         // 将该服务内所有的接口、接口实现、方法都注册到zookeeper中
         for (RegisterMethodEntity method : registerClassEntity.getMethodEntities()) {
-            String path = "/myrpc/" +
+            String path = serviceRootPath + "/" +
                     serviceName +
                     "/providers/" +
                     serviceIp + ":" + port +
@@ -120,18 +129,99 @@ public class ZookeeperRegistry implements Watcher, Registry {
         }
     }
 
+    /**
+     * 寻找服务
+     * @param serviceName 服务名称
+     * @param provider 服务提供者
+     * @param interfaceName 服务暴露的接口
+     * @param implClassName 服务所暴露接口的实现类
+     * @return
+     */
+    @Override
+    public RemoteClassEntity findRemoteClass(String serviceName, String provider, String interfaceName, String implClassName) throws Exception {
+        // 找服务
+        RemoteClassEntity remoteClassEntity = new RemoteClassEntity();
+        String holePath = "";
+        // 用服务名寻找服务
+        holePath += serviceRootPath + "/" + serviceName;
+        Stat stat = zooKeeper.exists(holePath, false);
+        if (stat == null) {
+            // 这个服务不存在
+            throw new Exception("服务在注册中心未注册");
+        }
+        // 选择该服务的提供者
+        if (provider == null || provider.equals("")) {
+            // 未指定服务提供者，先随机数实现负载均衡
+            List<String> children = zooKeeper.getChildren(holePath, false);
+            int providerIndex = new Random().nextInt(children.size());
+            provider = children.get(providerIndex);
+        }
+        // 找接口的实现
+        holePath += "/" + provider + "/" + interfaceName;
+        remoteClassEntity.setProvider(provider);
+        remoteClassEntity.setInterfaceName(interfaceName);
+        if (implClassName == null || implClassName.equals("")) {
+            // 为指定接口的实现（仅针对改该接口只有一个实现起作用）
+            List<String> children = zooKeeper.getChildren(holePath, false);
+            // 该远程接口不止一个实现
+            if (children.size() > 1) {
+                throw new Exception("远程接口有多个实现，请指定远程接口的实现");
+            } else {
+                implClassName = children.get(0);
+                holePath += "/" + implClassName;
+                Stat statImp = zooKeeper.exists(holePath, false);
+                if (statImp == null) {
+                    throw new Exception("该接口的该实现不存在");
+                }
+            }
+        } else {
+            holePath += "/" + implClassName;
+            Stat statImp = zooKeeper.exists(holePath, false);
+            if (statImp == null) {
+                throw new Exception("该接口的该实现不存在");
+            }
+        }
+        remoteClassEntity.setImplClassName(implClassName);
+        // 找接口中的方法
+        List<String> children = zooKeeper.getChildren(holePath, false);
+        for (String method : children) {
+            RegisterMethodEntity registerMethodEntity = new RegisterMethodEntity();
+            String[] parts = method.split("\\|\\|");
+            String methodName = parts[0];
+            String methodArgsString = parts[1];
+            String methodReturnType = parts[2];
+            String[] methodArgs = methodArgsString.split(",");
+            registerMethodEntity.setMethodName(methodName);
+            registerMethodEntity.setReturnType(methodReturnType);
+            registerMethodEntity.setMethodArgs(methodArgs);
+            remoteClassEntity.getMethodEntityList().add(registerMethodEntity);
+        }
+        System.out.println(remoteClassEntity);
+        return remoteClassEntity;
+    }
+
+    @Override
+    public RemoteClassEntity findRemoteClass(String serviceName, String interfaceName, String implClassName) throws Exception {
+        return findRemoteClass(serviceName, null, interfaceName, implClassName);
+    }
+
+    @Override
+    public RemoteClassEntity findRemoteClass(String serviceName, String interfaceName) throws Exception {
+        return findRemoteClass(serviceName, null, interfaceName, null);
+    }
+
     private void createNodeRecursively (String path) {
         String[] pathParts = path.split("/");
-        for (String p : pathParts) {
-            System.out.print(p + ",");
-        }
+//        for (String p : pathParts) {
+//            System.out.print(p + ",");
+//        }
         createNode("/" + pathParts[0] , pathParts, 0);
     }
 
     private void createNode (String father, String[] parts, int index) {
         try {
             father = father.endsWith("/") ? father.substring(0, father.length() - 1) : father;
-            System.out.println("currentPath : " + father + "/" + parts[index]);
+//            System.out.println("currentPath : " + father + "/" + parts[index]);
             zooKeeper.create(
                     father + "/" + parts[index],
                     "".getBytes(),
@@ -145,6 +235,25 @@ public class ZookeeperRegistry implements Watcher, Registry {
                 return;
             }
             createNode(father + "/" + parts[index], parts, index + 1);
+        }
+    }
+
+    /**
+     * 删除这个节点，并且删除这个节点下的所有子节点
+     * @param path
+     */
+    private void deleteRecursively (String path) {
+
+        try {
+            List<String> children = zooKeeper.getChildren(path, false);
+            for (String child : children) {
+                System.out.println(child);
+                deleteRecursively(path + "/" + child);
+            }
+            System.out.println("delete: " + path);
+            zooKeeper.delete(path, -1);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

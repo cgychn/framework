@@ -34,4 +34,12 @@ public class RegisterClassEntity {
         this.methodEntities = methodEntities;
     }
 
+    @Override
+    public String toString() {
+        return "RegisterClassEntity{" +
+                "interfaceName='" + interfaceName + '\'' +
+                ", currentClassName='" + currentClassName + '\'' +
+                ", methodEntities=" + methodEntities +
+                '}';
+    }
 }

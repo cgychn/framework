@@ -9,4 +9,5 @@ public @interface RPCService {
     String name() default "";
     boolean userRemoteServiceProxy() default false;
     String provider() default "";
+    String destRemoteImplClassName() default "";
 }

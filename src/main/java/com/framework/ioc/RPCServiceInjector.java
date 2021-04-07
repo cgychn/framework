@@ -3,6 +3,7 @@ package com.framework.ioc;
 import com.framework.annotation.RPCService;
 import com.framework.annotation.Transaction;
 import com.framework.context.MyFrameworkContext;
+import com.framework.rpc.proxy.RPCServiceProxy;
 import com.framework.rpc.register.ZookeeperRegister;
 import com.framework.transaction.TransactionInterceptor;
 import com.framework.util.StringUtil;
@@ -50,8 +51,10 @@ public class RPCServiceInjector implements Injector {
                     // 注册
                     ZookeeperRegister.getInstance().registerToRegistry(cls);
                 } else {
-                    // 说明该类是一个远程类
-
+                    // 说明该类是一个远程类，获取该类的调用信息，并生成代理
+                    Object rpcInstance = new RPCServiceProxy().bind(cls);
+                    // 注入容器
+                    MyFrameworkContext.set(cls, rpcInstance);
                 }
 
             } catch (Exception e) {
