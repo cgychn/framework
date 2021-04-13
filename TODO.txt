@@ -11,3 +11,10 @@ select * from user where user_id = #{userId} and create_time = #{createTime, jdb
 （调用阶段）
 1.消费者向注册中心索取被调用服务的相关信息。
 2.获取到信息后，消费者和提供者通信。】
+
+
+2021/4/13
+（1）需要配置的类加入配置文件
+（2）测试rpc
+（3）远程方法异常捕获
+（4）实现客户端负载均衡器
