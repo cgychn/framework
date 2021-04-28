@@ -1,10 +1,12 @@
-package com.framework.annotation;
+package com.framework.annotation.framework;
 
 import java.lang.annotation.*;
 
-@Target(ElementType.TYPE)
+@Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface Mapper {
+public @interface AutoWired {
+
     String name () default "";
+
 }

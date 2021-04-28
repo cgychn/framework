@@ -1,4 +1,4 @@
-package com.framework.annotation;
+package com.framework.annotation.rpc;
 
 import java.lang.annotation.*;
 

@@ -1,6 +1,6 @@
 package com.framework.test;
 
-import com.framework.annotation.Service;
+import com.framework.annotation.framework.Service;
 
 @Service
 public class MySupperServiceImp2 implements MySupperService2 {

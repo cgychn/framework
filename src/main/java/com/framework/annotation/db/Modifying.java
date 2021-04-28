@@ -1,4 +1,4 @@
-package com.framework.annotation;
+package com.framework.annotation.db;
 
 import java.lang.annotation.*;
 

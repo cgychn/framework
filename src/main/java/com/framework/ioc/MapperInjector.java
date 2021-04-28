@@ -1,17 +1,8 @@
 package com.framework.ioc;
 
-import com.framework.annotation.Mapper;
-import com.framework.annotation.Modifying;
-import com.framework.annotation.Param;
-import com.framework.annotation.Query;
+import com.framework.annotation.db.Mapper;
 import com.framework.context.MyFrameworkContext;
-import com.framework.db.DBTool;
 import com.framework.db.proxy.MapperProxy;
-
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
-import java.lang.reflect.Proxy;
 
 public class MapperInjector implements Injector {
 

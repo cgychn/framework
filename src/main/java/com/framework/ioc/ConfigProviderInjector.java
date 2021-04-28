@@ -1,13 +1,11 @@
 package com.framework.ioc;
 
-import com.framework.annotation.CfgProvider;
-import com.framework.annotation.Service;
+import com.framework.annotation.framework.CfgProvider;
 import com.framework.config.MyFrameworkCfgContext;
 import com.framework.config.prop.reader.PropertyReader;
 import com.framework.config.yml.reader.YmlReader;
 import com.framework.context.MyFrameworkContext;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class ConfigProviderInjector implements Injector {

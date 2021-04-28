@@ -1,7 +1,7 @@
 package com.framework.db.proxy;
 
-import com.framework.annotation.Modifying;
-import com.framework.annotation.Query;
+import com.framework.annotation.db.Modifying;
+import com.framework.annotation.db.Query;
 import com.framework.db.DBTool;
 import com.framework.db.parser.ParamNameSqlParamParser;
 import com.framework.db.parser.SqlParamParserResult;

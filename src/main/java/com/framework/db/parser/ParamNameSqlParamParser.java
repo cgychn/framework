@@ -1,6 +1,6 @@
 package com.framework.db.parser;
 
-import com.framework.annotation.Param;
+import com.framework.annotation.db.Param;
 import com.framework.util.StringUtil;
 
 import java.lang.reflect.Parameter;

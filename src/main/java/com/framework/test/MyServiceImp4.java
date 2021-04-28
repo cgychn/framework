@@ -1,10 +1,8 @@
 package com.framework.test;
 
-import com.framework.annotation.AutoWired;
-import com.framework.annotation.Service;
-import com.framework.annotation.Transaction;
-
-import java.util.List;
+import com.framework.annotation.framework.AutoWired;
+import com.framework.annotation.framework.Service;
+import com.framework.annotation.db.Transaction;
 
 @Service
 public class MyServiceImp4 implements MySupperService2 {

@@ -1,8 +1,8 @@
 package com.framework.test;
 
-import com.framework.annotation.AutoWired;
-import com.framework.annotation.RPCService;
-import com.framework.annotation.Transaction;
+import com.framework.annotation.framework.AutoWired;
+import com.framework.annotation.rpc.RPCService;
+import com.framework.annotation.db.Transaction;
 
 @RPCService
 public class RPCTestServiceImp implements RPCTestService {

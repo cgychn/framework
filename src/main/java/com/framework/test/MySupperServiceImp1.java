@@ -1,8 +1,7 @@
 package com.framework.test;
 
-import com.framework.annotation.AutoWired;
-import com.framework.annotation.Service;
-import com.framework.annotation.Transaction;
+import com.framework.annotation.framework.AutoWired;
+import com.framework.annotation.framework.Service;
 
 import java.util.List;
 

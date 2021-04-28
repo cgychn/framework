@@ -1,7 +1,7 @@
 package com.framework.ioc;
 
-import com.framework.annotation.AutoWired;
-import com.framework.annotation.Value;
+import com.framework.annotation.framework.AutoWired;
+import com.framework.annotation.framework.Value;
 import com.framework.config.MyFrameworkCfgContext;
 import com.framework.context.MyFrameworkContext;
 

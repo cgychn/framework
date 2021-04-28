@@ -1,6 +1,6 @@
 package com.framework.test;
 
-import com.framework.annotation.Transaction;
+import com.framework.annotation.db.Transaction;
 
 public interface MySupperService {
 

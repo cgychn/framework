@@ -1,7 +1,7 @@
 package com.framework.ioc;
 
-import com.framework.annotation.Service;
-import com.framework.annotation.Transaction;
+import com.framework.annotation.framework.Service;
+import com.framework.annotation.db.Transaction;
 import com.framework.context.MyFrameworkContext;
 import com.framework.transaction.TransactionInterceptor;
 

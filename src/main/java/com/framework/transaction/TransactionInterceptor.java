@@ -1,6 +1,6 @@
 package com.framework.transaction;
 
-import com.framework.annotation.Transaction;
+import com.framework.annotation.db.Transaction;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;

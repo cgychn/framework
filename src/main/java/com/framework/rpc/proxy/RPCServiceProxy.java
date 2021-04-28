@@ -1,6 +1,6 @@
 package com.framework.rpc.proxy;
 
-import com.framework.annotation.RPCService;
+import com.framework.annotation.rpc.RPCService;
 import com.framework.rpc.register.entiy.RemoteClassEntity;
 import com.framework.rpc.register.registry.ZookeeperRegistry;
 

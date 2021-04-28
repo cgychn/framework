@@ -1,9 +1,9 @@
 package com.framework.test;
 
-import com.framework.annotation.Mapper;
-import com.framework.annotation.Modifying;
-import com.framework.annotation.Param;
-import com.framework.annotation.Query;
+import com.framework.annotation.db.Mapper;
+import com.framework.annotation.db.Modifying;
+import com.framework.annotation.db.Param;
+import com.framework.annotation.db.Query;
 
 import java.util.List;
 
