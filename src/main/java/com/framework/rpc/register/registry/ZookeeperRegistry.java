@@ -27,7 +27,14 @@ public class ZookeeperRegistry implements Watcher, Registry {
 
     public static String serviceName = "testService";
 
-    public static String serviceIp = "10.0.0.23";
+    public static String serviceIp = "10.0.0.37";
+
+    // 这两个属性控制当前服务 只订阅（只消费服务提供者提供的服务）/只注册（只在注册中心注册自己，而不消费别人提供的服务）
+    // 只注册，不订阅
+    public static boolean justRegister = false;
+
+    // 只订阅，不注册
+    public static boolean justSubscribe = false;
 
     public static String port = "9098";
 
@@ -150,6 +157,7 @@ public class ZookeeperRegistry implements Watcher, Registry {
             throw new Exception("服务在注册中心未注册");
         }
         // 选择该服务的提供者
+        holePath += "/providers";
         if (provider == null || provider.equals("")) {
             // 未指定服务提供者，先随机数实现负载均衡
             List<String> children = zooKeeper.getChildren(holePath, false);

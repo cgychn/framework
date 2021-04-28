@@ -5,7 +5,7 @@ public class Main {
 
     public static void main (String[] args) throws Exception {
 
-        MyFrameworkRunner.run();
+        MyFrameworkRunner.run("com.framework");
 
         // test
 //        RPCTestServiceImp mySupperServiceImp1 = MyFrameworkContext.get(RPCTestServiceImp.class);

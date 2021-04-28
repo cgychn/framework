@@ -7,7 +7,7 @@ import java.lang.annotation.*;
 @Documented
 public @interface RPCService {
     String name() default "";
-    boolean userRemoteServiceProxy() default false;
+    boolean useRemoteServiceProxy() default false;
     String provider() default "";
     String destRemoteImplClassName() default "";
 }

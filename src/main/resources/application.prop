@@ -1,0 +1,10 @@
+
+# 提供服务
+myrpc.provide.serviceName = testService
+myrpc.provide.serviceIp = 10.0.0.37
+myrpc.provide.justRegister = false
+myrpc.provide.justSubscribe = false
+
+# 消费服务（当服务在配置文件中声名时，文件配置文件中的配置将自动替换注解中的配置文件）
+myrpc.consume.testService.provider = 10.0.0.37
+myrpc.consume.testService.destRemoteImplClassName = com

@@ -1,6 +1,8 @@
 package com.framework.ioc;
 
 import com.framework.annotation.AutoWired;
+import com.framework.annotation.Value;
+import com.framework.config.MyFrameworkCfgContext;
 import com.framework.context.MyFrameworkContext;
 
 import java.lang.reflect.Field;
@@ -13,6 +15,7 @@ public class ObjectAssembler {
             Field[] fields = x.getType().getDeclaredFields();
             for (Field field : fields) {
                 field.setAccessible(true);
+                // 注入容器中的对象
                 if (field.isAnnotationPresent(AutoWired.class)) {
                     // 注入
                     Object object;
@@ -23,6 +26,17 @@ public class ObjectAssembler {
                     }
                     try {
                         field.set(x.getObject(x.getType()), object);
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                // 注入配置文件中的对象
+                if (field.isAnnotationPresent(Value.class)) {
+                    String cfgValueKey = field.getDeclaredAnnotation(Value.class).value();
+                    // 注入
+                    try {
+                        field.set(x.getObject(x.getType()), MyFrameworkCfgContext.get(cfgValueKey));
                     } catch (IllegalAccessException e) {
                         e.printStackTrace();
                     }

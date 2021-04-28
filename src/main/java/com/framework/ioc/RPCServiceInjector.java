@@ -25,7 +25,7 @@ public class RPCServiceInjector implements Injector {
             RPCService rpcService = ((RPCService) cls.getDeclaredAnnotation(RPCService.class));
             try {
                 // 如果该服务是被注解类的提供者
-                if (!rpcService.userRemoteServiceProxy() && !cls.isInterface()) {
+                if (!rpcService.useRemoteServiceProxy() && !cls.isInterface()) {
                     Object po = null;
                     Method[] methods = cls.getDeclaredMethods();
                     boolean hasTransactionAnnotation = false;

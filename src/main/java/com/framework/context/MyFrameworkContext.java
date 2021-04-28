@@ -11,6 +11,8 @@ public class MyFrameworkContext {
 
     public static Set<IocEntity> myContainer = new HashSet<>();
 
+    public static Class mainClass = null;
+
     public static void set (Class cls, Object obj) throws Exception {
         String[] clsParts = cls.getName().split("\\.");
         set(cls, StringUtil.firstCharLowerCase(clsParts[clsParts.length - 1]), obj);
@@ -76,6 +78,13 @@ public class MyFrameworkContext {
         return null;
     }
 
+    public static void setMainClass (Class cls) {
+        mainClass = cls;
+    }
+
+    public static Class getMainClass () {
+        return mainClass;
+    }
 
 
 
