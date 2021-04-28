@@ -18,3 +18,7 @@ select * from user where user_id = #{userId} and create_time = #{createTime, jdb
 （2）测试rpc
 （3）远程方法异常捕获
 （4）实现客户端负载均衡器
+
+2021/4/28
+（1）框架中所有工具类配置都抽离到配置文件
+（2）rpc 远程服务需要支持在配置文件中配置，配置文件配置的优先级大于注解配置的优先级 
