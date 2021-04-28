@@ -4,6 +4,7 @@ import com.framework.annotation.framework.FrameworkStarter;
 import com.framework.config.MyFrameworkCfgContext;
 import com.framework.context.MyClassLoader;
 import com.framework.ioc.*;
+import com.framework.ioc.injector.*;
 import com.framework.rpc.server.RpcServer;
 
 import java.io.IOException;

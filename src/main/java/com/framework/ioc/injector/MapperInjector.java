@@ -1,4 +1,4 @@
-package com.framework.ioc;
+package com.framework.ioc.injector;
 
 import com.framework.annotation.db.Mapper;
 import com.framework.context.MyFrameworkContext;

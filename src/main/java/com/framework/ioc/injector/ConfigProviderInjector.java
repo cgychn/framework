@@ -1,4 +1,4 @@
-package com.framework.ioc;
+package com.framework.ioc.injector;
 
 import com.framework.annotation.framework.CfgProvider;
 import com.framework.config.MyFrameworkCfgContext;

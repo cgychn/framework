@@ -1,4 +1,4 @@
-package com.framework.ioc;
+package com.framework.ioc.injector;
 
 public interface Injector {
 

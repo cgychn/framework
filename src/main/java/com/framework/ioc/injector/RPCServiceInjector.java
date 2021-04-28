@@ -1,4 +1,4 @@
-package com.framework.ioc;
+package com.framework.ioc.injector;
 
 import com.framework.annotation.rpc.RPCService;
 import com.framework.annotation.db.Transaction;
