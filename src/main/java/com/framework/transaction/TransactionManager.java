@@ -9,14 +9,15 @@ import java.sql.SQLException;
 public class TransactionManager {
 
     // 连接池
-    private static DBPool dbPool = DBPool.getInstance(
-            20,
-            "root",
-            "123456",
-            "ams?serverTimezone=GMT%2B8&useSSL=false",
-            3306,
-            "localhost"
-    );
+//    private static DBPool dbPool = DBPool.getInstance(
+//            20,
+//            "root",
+//            "123456",
+//            "ams?serverTimezone=GMT%2B8&useSSL=false",
+//            3306,
+//            "localhost"
+//    );
+    private static DBPool dbPool = DBPool.getInstance();
 
     static ThreadLocal<Connection> connectionThreadLocal = new ThreadLocal<>();
 

@@ -39,7 +39,7 @@ public class RegisterSelector {
      * 寻找注册中心
      */
     private static void findRegistryInCfg () {
-        List<String> regs = MyFrameworkCfgContext.getSubNodes("myrpc.registry")
+        List<String> regs = MyFrameworkCfgContext.getSubNodes("framework.myrpc.registry")
                 .stream()
                 .collect(Collectors.toList());
         if (regs.size() > 1) {

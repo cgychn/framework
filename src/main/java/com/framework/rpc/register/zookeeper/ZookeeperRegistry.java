@@ -27,18 +27,18 @@ public class ZookeeperRegistry implements Watcher, Registry {
 
     // 每个服务提供者都需要配置这个
     // 这些将来都会抽离到配置文件中（在配置文件中必须以这种格式：myrpc.provide.serviceName  myrpc.provide.serviceIp  myrpc.provide.servicePort）
-    public static String serviceName = (String) MyFrameworkCfgContext.get("myrpc.provide.serviceName");
-    public static String serviceIp = (String) MyFrameworkCfgContext.get("myrpc.provide.serviceIp");
-    public static String port = (String) MyFrameworkCfgContext.get("myrpc.provide.servicePort");
+    public static String serviceName = (String) MyFrameworkCfgContext.get("framework.myrpc.provide.serviceName");
+    public static String serviceIp = (String) MyFrameworkCfgContext.get("framework.myrpc.provide.serviceIp");
+    public static String port = (String) MyFrameworkCfgContext.get("framework.myrpc.provide.servicePort");
     // 这两个属性控制当前服务 只订阅（只消费服务提供者提供的服务）/只注册（只在注册中心注册自己，而不消费别人提供的服务）
     // 只注册，不订阅（myrpc.provide.justRegister  myrpc.provide.justSubscribe）
-    public static Boolean justRegister = MyFrameworkCfgContext.get("myrpc.provide.justRegister", Boolean.class);
+    public static Boolean justRegister = MyFrameworkCfgContext.get("framework.myrpc.provide.justRegister", Boolean.class);
     // 只订阅，不注册
-    public static Boolean justSubscribe = MyFrameworkCfgContext.get("myrpc.provide.justSubscribe", Boolean.class);
+    public static Boolean justSubscribe = MyFrameworkCfgContext.get("framework.myrpc.provide.justSubscribe", Boolean.class);
 
     // 如果使用zookeeper注册中心需要配置，默认使用这个注册中心（使用其他的注册中心请无配置myrpc.registry.zookeeper.ips myrpc.registry.zookeeper.timeout）
-    public static String zkIPs = (String) MyFrameworkCfgContext.get("myrpc.registry.zookeeper.ips");
-    public static int timeout = MyFrameworkCfgContext.get("myrpc.registry.zookeeper.timeout", Integer.class);
+    public static String zkIPs = (String) MyFrameworkCfgContext.get("framework.myrpc.registry.zookeeper.ips");
+    public static int timeout = MyFrameworkCfgContext.get("framework.myrpc.registry.zookeeper.timeout", Integer.class);
     private static ZooKeeper zooKeeper;
 
 

@@ -1,5 +1,7 @@
 package com.framework.util;
 
+import com.framework.config.MyFrameworkCfgContext;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -12,54 +14,69 @@ public class DBPool {
 	 * 数据库连接池对象，用来维护一堆数据库连接
 	 */
 	private static List<Connection> connPool = new ArrayList<>();
-	
+
 	/**
 	 * DBPool的单例
 	 */
 	private static DBPool poolInstance = null;
-	
+
 	/**
 	 * 连接池的大小
 	 */
 	private static int poolSize = 0;
-	
-	
+
+
 	private DBPool(int poolSize) {
 		DBPool.poolSize = poolSize;
 	}
-	
-	
+
+
 	/**
 	 * 这个poolsize不可以动态调整，在第一次初始化之后就定了
 	 * @param poolSize
 	 * @return
 	 */
-	public static DBPool getInstance(int poolSize , String dbUsername , String dbPassword , String dbName , int port , String host) {
+	public static DBPool getInstance(
+			int poolSize,
+			String dbUsername,
+			String dbPassword,
+			String url,
+			String driverName
+	) {
 		if(poolInstance == null) {
 			poolInstance = new DBPool(poolSize);
-			poolInstance.initPool(dbUsername , dbPassword , dbName , port , host);
+			poolInstance.initPool(dbUsername , dbPassword , url, driverName);
 		}
 		return poolInstance;
 	}
-	
+
+	public static DBPool getInstance() {
+		// 这里调整为从配置文件中获取 "com.mysql.jdbc.Driver"
+		Integer poolSize = MyFrameworkCfgContext.get("framework.db.connPoolSize", Integer.class);
+		String dbUsername = MyFrameworkCfgContext.get("framework.db.userName", String.class);
+		String dbPassword = MyFrameworkCfgContext.get("framework.db.password", String.class);
+		String url = MyFrameworkCfgContext.get("framework.db.url", String.class);
+		String driverName = MyFrameworkCfgContext.get("framework.db.driverName", String.class);
+		return getInstance(poolSize, dbUsername, dbPassword, url, driverName);
+	}
+
 	/**
 	 * 初始化连接池
 	 * @param dbUsername
 	 * @param dbPassword
-	 * @param dbName
-	 * @param port
-	 * @param host
+	 * @param url
+	 * @param driverName
 	 * @return
 	 */
-	private List<Connection> initPool(String dbUsername , String dbPassword , String dbName , int port , String host){
+	private List<Connection> initPool(String dbUsername , String dbPassword , String url, String driverName){
 		//根据给定的连接池大小初始化连接
 		System.out.println("初始化连接池");
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
+			Class.forName(driverName);
 			for (int i = 0 ; i < DBPool.poolSize ; i ++) {
 				//添加连接到连接池
 				DBPool.connPool.add(
-							DriverManager.getConnection("jdbc:mysql://"+host+":"+port+"/"+dbName , dbUsername , dbPassword)
+							DriverManager.getConnection(url , dbUsername , dbPassword)
 						);
 			}
 		} catch (SQLException e) {
@@ -69,11 +86,11 @@ public class DBPool {
 			// TODO: handle exception
 			e.printStackTrace();
 		}
-		
+
 		return connPool;
 	}
-	
-	
+
+
 	/**
 	 * 从数据库连接池中获取一个连接
 	 * @return
@@ -94,8 +111,8 @@ public class DBPool {
 		}
 		return conn;
 	}
-	
-	
+
+
 	/**
 	 * 将连接对象还给连接池
 	 */
