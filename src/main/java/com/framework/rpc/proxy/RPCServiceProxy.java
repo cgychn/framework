@@ -2,7 +2,7 @@ package com.framework.rpc.proxy;
 
 import com.framework.annotation.rpc.RPCService;
 import com.framework.rpc.register.entiy.RemoteClassEntity;
-import com.framework.rpc.register.registry.ZookeeperRegistry;
+import com.framework.rpc.register.zookeeper.ZookeeperRegistry;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;

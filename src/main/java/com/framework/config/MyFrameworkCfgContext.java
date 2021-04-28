@@ -3,9 +3,7 @@ package com.framework.config;
 import com.framework.config.prop.reader.PropertyReader;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class MyFrameworkCfgContext {
 
@@ -70,6 +68,29 @@ public class MyFrameworkCfgContext {
         for (Map.Entry<String, Object> entry : entries) {
             set(entry.getKey(), entry.getValue());
         }
+    }
+
+    /**
+     * 获取指定配置下所有子配置项，比如：a.b.c 下 a.b.c.d 和 a.b.c.d.g 和 a.b.c.e，会返回 d，e，但不会返回g
+     * @param root
+     * @return
+     */
+    public static Set<String> getSubNodes (String root) {
+        Set<String> sets = new HashSet<>();
+        for (String key : cfgMap.keySet()) {
+            System.out.println("key: " + key);
+            if (key.startsWith(root)) {
+                // 是这个配置的子项
+                String sub = key.replace(root, "");
+                if (sub.equals("")) {
+                    // 就是本身
+                } else {
+                    String[] parts = sub.split("\\.");
+                    sets.add(parts[1]);
+                }
+            }
+        }
+        return sets;
     }
 
 }

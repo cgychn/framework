@@ -3,7 +3,7 @@ package com.framework.main;
 import com.framework.annotation.framework.FrameworkStarter;
 import com.framework.config.MyFrameworkCfgContext;
 import com.framework.context.MyClassLoader;
-import com.framework.ioc.*;
+import com.framework.ioc.ObjectAssembler;
 import com.framework.ioc.injector.*;
 import com.framework.rpc.server.RpcServer;
 
@@ -33,7 +33,7 @@ public class MyFrameworkRunner {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+        System.out.println("bbbbbbbbb");
 
         // 注入容器
         classes.forEach(x -> {
@@ -48,8 +48,6 @@ public class MyFrameworkRunner {
                 ConfigProviderInjector.getInstance().inject(x);
             }
         });
-
-
 
         // 装配
         ObjectAssembler.assemble();

@@ -1,8 +1,8 @@
-package com.framework.rpc.register;
+package com.framework.rpc.register.zookeeper;
 
+import com.framework.rpc.register.Register;
 import com.framework.rpc.register.entiy.RegisterClassEntity;
 import com.framework.rpc.register.entiy.RegisterMethodEntity;
-import com.framework.rpc.register.registry.ZookeeperRegistry;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;

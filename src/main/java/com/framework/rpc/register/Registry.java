@@ -1,4 +1,4 @@
-package com.framework.rpc.register.registry;
+package com.framework.rpc.register;
 
 import com.framework.rpc.register.entiy.RegisterClassEntity;
 import com.framework.rpc.register.entiy.RemoteClassEntity;

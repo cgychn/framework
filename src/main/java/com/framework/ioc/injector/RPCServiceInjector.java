@@ -4,7 +4,8 @@ import com.framework.annotation.rpc.RPCService;
 import com.framework.annotation.db.Transaction;
 import com.framework.context.MyFrameworkContext;
 import com.framework.rpc.proxy.RPCServiceProxy;
-import com.framework.rpc.register.ZookeeperRegister;
+import com.framework.rpc.register.RegisterSelector;
+import com.framework.rpc.register.zookeeper.ZookeeperRegister;
 import com.framework.transaction.TransactionInterceptor;
 
 import java.lang.reflect.Method;
@@ -47,8 +48,9 @@ public class RPCServiceInjector implements Injector {
                         MyFrameworkContext.set(cls, rpcService.name(), po);
                     }
 
-                    // 注册
-                    ZookeeperRegister.getInstance().registerToRegistry(cls);
+                    // 注册，这里应该接受配置，让用户选择使用哪个注册中心
+                    RegisterSelector.registerServiceToEnabledRegistry(cls);
+//                    ZookeeperRegister.getInstance().registerToRegistry(cls);
                 } else {
                     // 说明该类是一个远程类，获取该类的调用信息，并生成代理
                     Object rpcInstance = new RPCServiceProxy().bind(cls);
