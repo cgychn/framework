@@ -28,9 +28,9 @@ public class ConfigFileSelector {
      */
     public static File getSelectedConfigFile (String cfgName) {
         File destFile = null;
-        System.out.println(PathUtil.getJarPackGrandRootEtcPath(MyFrameworkContext.getMainClass()) + cfgName);
-        System.out.println(PathUtil.getJarPackRootPath(MyFrameworkContext.getMainClass()) + cfgName);
-        System.out.println(PathUtil.getProjectResourcePath(MyFrameworkContext.getMainClass()) + cfgName);
+//        System.out.println(PathUtil.getJarPackGrandRootEtcPath(MyFrameworkContext.getMainClass()) + cfgName);
+//        System.out.println(PathUtil.getJarPackRootPath(MyFrameworkContext.getMainClass()) + cfgName);
+//        System.out.println(PathUtil.getProjectResourcePath(MyFrameworkContext.getMainClass()) + cfgName);
         // 按优先级获取配置文件
         destFile = new File(PathUtil.getJarPackGrandRootEtcPath(MyFrameworkContext.getMainClass()) + cfgName);
         if (destFile.exists()) {

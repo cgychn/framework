@@ -32,9 +32,9 @@ public class ZookeeperRegistry implements Watcher, Registry {
     public static String port = (String) MyFrameworkCfgContext.get("myrpc.provide.servicePort");
     // 这两个属性控制当前服务 只订阅（只消费服务提供者提供的服务）/只注册（只在注册中心注册自己，而不消费别人提供的服务）
     // 只注册，不订阅（myrpc.provide.justRegister  myrpc.provide.justSubscribe）
-    public static boolean justRegister = MyFrameworkCfgContext.get("myrpc.provide.justRegister", Boolean.class);
+    public static Boolean justRegister = MyFrameworkCfgContext.get("myrpc.provide.justRegister", Boolean.class);
     // 只订阅，不注册
-    public static boolean justSubscribe = MyFrameworkCfgContext.get("myrpc.provide.justSubscribe", Boolean.class);
+    public static Boolean justSubscribe = MyFrameworkCfgContext.get("myrpc.provide.justSubscribe", Boolean.class);
 
     // 如果使用zookeeper注册中心需要配置，默认使用这个注册中心（使用其他的注册中心请无配置myrpc.registry.zookeeper.ips myrpc.registry.zookeeper.timeout）
     public static String zkIPs = (String) MyFrameworkCfgContext.get("myrpc.registry.zookeeper.ips");

@@ -33,7 +33,7 @@ public class MyFrameworkRunner {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println("bbbbbbbbb");
+//        System.out.println("bbbbbbbbb");
 
         // 注入容器
         classes.forEach(x -> {

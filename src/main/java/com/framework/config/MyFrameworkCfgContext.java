@@ -39,18 +39,22 @@ public class MyFrameworkCfgContext {
 
 
     public static <T> T get (String key, Class<T> cls) {
-        if (cls == Integer.class) {
-            return (T) Integer.valueOf(get(key).toString());
-        } else if (cls == Long.class) {
-            return (T) Long.valueOf(get(key).toString());
-        } else if (cls == Short.class) {
-            return (T) Short.valueOf(get(key).toString());
-        } else if (cls == Boolean.class) {
-            return (T) Boolean.valueOf(get(key).toString());
-        } else {
-            return cls.cast(get(key));
+        try {
+            if (cls == Integer.class) {
+                return (T) Integer.valueOf(get(key).toString());
+            } else if (cls == Long.class) {
+                return (T) Long.valueOf(get(key).toString());
+            } else if (cls == Short.class) {
+                return (T) Short.valueOf(get(key).toString());
+            } else if (cls == Boolean.class) {
+                return (T) Boolean.valueOf(get(key).toString());
+            } else {
+                return cls.cast(get(key));
+            }
+        } catch (Exception e) {
+            System.out.println("配置为空");
+            return null;
         }
-
     }
 
 
@@ -78,7 +82,7 @@ public class MyFrameworkCfgContext {
     public static Set<String> getSubNodes (String root) {
         Set<String> sets = new HashSet<>();
         for (String key : cfgMap.keySet()) {
-            System.out.println("key: " + key);
+//            System.out.println("key: " + key);
             if (key.startsWith(root)) {
                 // 是这个配置的子项
                 String sub = key.replace(root, "");
