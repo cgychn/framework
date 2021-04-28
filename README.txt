@@ -16,3 +16,6 @@
 （1）jdbc statement 换成 preparestatement
 （2）增加sql参数解析器
 （3）将connection换为连接池
+（4）prop配置文件加载器
+（5）基于socket的rpc框架
+（6）rpc默认的zookeeper注册中心
