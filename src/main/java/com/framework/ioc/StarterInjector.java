@@ -13,8 +13,6 @@ public class StarterInjector implements Injector {
 
     @Override
     public void inject(Class cls) {
-        if (cls.isAnnotationPresent(FrameworkStarter.class)) {
-            MyFrameworkContext.setMainClass(cls);
-        }
+        MyFrameworkContext.setMainClass(cls);
     }
 }

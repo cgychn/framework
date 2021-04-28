@@ -39,6 +39,23 @@ public class MyFrameworkCfgContext {
         return cfgMap.get(key);
     }
 
+
+    public static <T> T get (String key, Class<T> cls) {
+        if (cls == Integer.class) {
+            return (T) Integer.valueOf(get(key).toString());
+        } else if (cls == Long.class) {
+            return (T) Long.valueOf(get(key).toString());
+        } else if (cls == Short.class) {
+            return (T) Short.valueOf(get(key).toString());
+        } else if (cls == Boolean.class) {
+            return (T) Boolean.valueOf(get(key).toString());
+        } else {
+            return cls.cast(get(key));
+        }
+
+    }
+
+
     public static void set (String key, Object obj) {
         if (cfgMap.get(key) == null) {
             cfgMap.put(key, obj);

@@ -1,5 +1,6 @@
 package com.framework.main;
 
+import com.framework.annotation.FrameworkStarter;
 import com.framework.config.MyFrameworkCfgContext;
 import com.framework.context.MyClassLoader;
 import com.framework.ioc.*;
@@ -14,11 +15,28 @@ public class MyFrameworkRunner {
 
         // 加载所有的类
         List<Class> classes = MyClassLoader.loadClass(scanPath);
+
+        // 设置框架的启动类
+        for (Class x : classes) {
+            if (!x.isAnonymousClass()
+                    && !x.isMemberClass()
+                    && x.isAnnotationPresent(FrameworkStarter.class)) {
+                StarterInjector.getInstance().inject(x);
+                break;
+            }
+        }
+
+        // 加载框架的主配置文件
+        try {
+            MyFrameworkCfgContext.loadMainProp("application");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
         // 注入容器
         classes.forEach(x -> {
             if (!x.isAnonymousClass() && !x.isMemberClass()) {
-                // Starter
-                StarterInjector.getInstance().inject(x);
                 // DB Mapper
                 MapperInjector.getInstance().inject(x);
                 // Service
@@ -30,12 +48,7 @@ public class MyFrameworkRunner {
             }
         });
 
-        // 加载框架的主配置文件
-        try {
-            MyFrameworkCfgContext.loadMainProp("application");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
 
         // 装配
         ObjectAssembler.assemble();

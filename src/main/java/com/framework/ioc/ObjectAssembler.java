@@ -36,7 +36,7 @@ public class ObjectAssembler {
                     String cfgValueKey = field.getDeclaredAnnotation(Value.class).value();
                     // 注入
                     try {
-                        field.set(x.getObject(x.getType()), MyFrameworkCfgContext.get(cfgValueKey));
+                        field.set(x.getObject(x.getType()), MyFrameworkCfgContext.get(cfgValueKey, x.getType()));
                     } catch (IllegalAccessException e) {
                         e.printStackTrace();
                     }

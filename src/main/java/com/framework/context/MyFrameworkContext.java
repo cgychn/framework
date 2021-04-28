@@ -79,6 +79,7 @@ public class MyFrameworkContext {
     }
 
     public static void setMainClass (Class cls) {
+        System.out.println(cls);
         mainClass = cls;
     }
 
