@@ -51,6 +51,11 @@ public class ZookeeperRegistry implements Watcher, Registry {
 
     private ZookeeperRegistry () {
         this.connect();
+        if (serviceName == null || serviceIp == null || port == null) {
+            return;
+        }
+        // 注册之前先递归删除其和其子节点
+        this.deleteRecursively(serviceRootPath + "/" + serviceName + "/providers/" + serviceIp + ":" + port);
     }
 
     public static ZookeeperRegistry getInstance() {
@@ -119,8 +124,6 @@ public class ZookeeperRegistry implements Watcher, Registry {
     @Override
     public void doRegister(RegisterClassEntity registerClassEntity) {
 //        this.connect();
-        // 注册之前先递归删除其和其子节点
-        this.deleteRecursively(serviceRootPath + "/" + serviceName + "/providers/" + serviceIp + ":" + port);
         // 将该服务内所有的接口、接口实现、方法都注册到zookeeper中
         for (RegisterMethodEntity method : registerClassEntity.getMethodEntities()) {
             String path = serviceRootPath + "/" +
@@ -229,12 +232,14 @@ public class ZookeeperRegistry implements Watcher, Registry {
         try {
             father = father.endsWith("/") ? father.substring(0, father.length() - 1) : father;
 //            System.out.println("currentPath : " + father + "/" + parts[index]);
-            zooKeeper.create(
-                    father + "/" + parts[index],
-                    "".getBytes(),
-                    ZooDefs.Ids.OPEN_ACL_UNSAFE,
-                    CreateMode.PERSISTENT
-            );
+            if (zooKeeper.exists(father + "/" + parts[index], false) == null) {
+                zooKeeper.create(
+                        father + "/" + parts[index],
+                        "".getBytes(),
+                        ZooDefs.Ids.OPEN_ACL_UNSAFE,
+                        CreateMode.PERSISTENT
+                );
+            }
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -257,7 +262,7 @@ public class ZookeeperRegistry implements Watcher, Registry {
                 System.out.println(child);
                 deleteRecursively(path + "/" + child);
             }
-            System.out.println("delete: " + path);
+//            System.out.println("delete: " + path);
             zooKeeper.delete(path, -1);
         } catch (Exception e) {
             e.printStackTrace();
