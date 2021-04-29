@@ -13,3 +13,6 @@ framework.myrpc.registry.zookeeper.timeout = 20000
 # 消费服务（当服务在配置文件中声名时，文件配置文件中的配置将自动替换注解中的配置文件）
 framework.myrpc.consume.testService.provider = 10.0.0.37
 framework.myrpc.consume.testService.destRemoteImplClassName = com
+# 直连服务提供者（不从注册中心获取），使用直连方式需要指定 provider，该配置项默认为false（默认不使用直连）
+framework.myrpc.consume.testService.directConnect = false
+framework.myrpc.consume.testService.registerName = aa

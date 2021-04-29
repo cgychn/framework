@@ -11,7 +11,7 @@ import java.net.Socket;
 public class RpcServer {
     ServerSocket serverSocket;
     // 引入线程池
-    ThreadPool threadPool = ThreadPool.getThreadPoolInstance(30);
+    ThreadPool threadPool = ThreadPool.getThreadPoolInstance();
 
     public RpcServer () throws IOException {
         serverSocket = new ServerSocket(MyFrameworkCfgContext.get("framework.myrpc.provide.servicePort", Integer.class));
@@ -25,11 +25,10 @@ public class RpcServer {
 
     public static void startRPCServer () throws IOException {
         // 如果当前的服务也需要注册到注册中心，判断条件是服务是否配置了provider/只订阅，
-        if (MyFrameworkCfgContext.getSubNodes("framework.myrpc.provide").size() == 0
-                || MyFrameworkCfgContext.get("framework.myrpc.provide.justSubscribe", Boolean.class) == true) {
+        if (MyFrameworkCfgContext.getSubNodes("framework.myrpc.provide").size() == 0) {
             return;
         }
-        RpcServer rpcServer = new RpcServer();
+        new RpcServer();
     }
 
     // test

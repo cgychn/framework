@@ -3,6 +3,7 @@ package com.framework.rpc.register.zookeeper;
 import com.framework.rpc.register.Register;
 import com.framework.rpc.register.entiy.RegisterClassEntity;
 import com.framework.rpc.register.entiy.RegisterMethodEntity;
+import com.framework.rpc.register.entiy.RegistryConfigItem;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -23,7 +24,7 @@ public class ZookeeperRegister implements Register {
     }
 
     @Override
-    public void registerToRegistry(Class cls) {
+    public void registerToRegistry(Class cls, RegistryConfigItem registryConfigItem) {
         Method[] methods = cls.getDeclaredMethods();
         // 向注册中心注册当前服务
         RegisterClassEntity registerClassEntity = new RegisterClassEntity();
@@ -52,7 +53,10 @@ public class ZookeeperRegister implements Register {
 
         System.out.println(registerClassEntity);
 
-        ZookeeperRegistry.getInstance().doRegister(registerClassEntity);
-
+        try {
+            registryConfigItem.getRegistry().doRegister(registerClassEntity);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

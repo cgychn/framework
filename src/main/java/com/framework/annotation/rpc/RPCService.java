@@ -10,4 +10,6 @@ public @interface RPCService {
     boolean useRemoteServiceProxy() default false;
     String provider() default "";
     String destRemoteImplClassName() default "";
+    boolean directConnect() default false;
+    String destRegistry() default "";
 }

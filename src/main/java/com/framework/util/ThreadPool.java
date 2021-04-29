@@ -1,11 +1,13 @@
 package com.framework.util;
 
+import com.framework.config.MyFrameworkCfgContext;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ThreadPool {
-	
+
 	//这是线程池，用于维护一些线程
 	private static List<MyTask> threads = new ArrayList<MyTask>();
 	//这是线程池的实例
@@ -16,12 +18,12 @@ public class ThreadPool {
 	public static AtomicInteger available = new AtomicInteger(0);
 	public static AtomicInteger taskExecuted = new AtomicInteger(0);
 	private static int poolSize = 0;
-	
+
 	//私有化构造方法
 	private ThreadPool() {
-		
+
 	}
-	
+
 	//得到线程池的单例
 	public static synchronized ThreadPool getThreadPoolInstance(int poolSize) {
 		if(ThreadPool.thPoolInstance == null) {
@@ -45,8 +47,16 @@ public class ThreadPool {
 		}
 		return ThreadPool.thPoolInstance;
 	}
-	
-	
+
+	public static synchronized ThreadPool getThreadPoolInstance() {
+		Integer poolSize = MyFrameworkCfgContext.get("framework.threadpool.size", Integer.class);
+		if (poolSize == null || poolSize.intValue() < 0) {
+			poolSize = 20;
+		}
+		return getThreadPoolInstance(poolSize);
+	}
+
+
 	//执行任务
 	public void exeTasks(ArrayList<Runnable> threadList) {
 		//在任务队列中添加任务
@@ -57,9 +67,9 @@ public class ThreadPool {
 			}
 			taskQueue.notifyAll();
 		}
-		
+
 	}
-	
+
 	//执行单个任务
 	public void exeTask(Runnable thread) {
 		//在任务队列中添加任务
@@ -68,7 +78,7 @@ public class ThreadPool {
 			taskExecuted.getAndAdd(1);
 			taskQueue.notifyAll();
 		}
-		
+
 	}
 
 	@Override
@@ -76,15 +86,15 @@ public class ThreadPool {
 		// TODO Auto-generated method stub
 		return "可用线程数量为：" + ThreadPool.available;
 	}
-	
+
 
 	//线程内部类（用于处理任务）
 	class MyTask extends Thread{
-		
+
 		private volatile boolean canRun = true;
-		
+
 		private volatile boolean runningState = false;
-		
+
 		//运行任务
 		@Override
 		public void run() {
@@ -92,7 +102,7 @@ public class ThreadPool {
 			//从任务队列中取出一个任务执行
 			try {
 				while (this.canRun) {
-					
+
 					//如果任务队列中获取一个任务执行
 					Runnable thread = null;
 					synchronized (taskQueue) {
@@ -153,5 +163,5 @@ public class ThreadPool {
 			this.canRun = true;
 		}
 	}
-	
+
 }
