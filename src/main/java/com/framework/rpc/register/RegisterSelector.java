@@ -19,15 +19,21 @@ public class RegisterSelector {
         // 寻找已经启用的注册中心（在 myrpc.registry 下的子节点（一层关系））
         findRegistryInCfg();
 
-        switch (enabledReg) {
-            case "zookeeper":
-                System.out.println("使用zookeeper注册中心");
-                // zookeeper注册中心，
-                ZookeeperRegister.getInstance().registerToRegistry(cls);
-                break;
-            default:
-                System.out.println("未使用注册中心，请指定");
-                return;
+        Boolean justSub = MyFrameworkCfgContext.get("framework.myrpc.provide.justSubscribe", Boolean.class);
+        // 默认 justRegister 为false
+        // 默认 justSub 为false
+        if (null == justSub || false == justSub) {
+            // 只有未配置只订阅或者只订阅为false才会向注册中心注册
+            switch (enabledReg) {
+                case "zookeeper":
+                    System.out.println("使用zookeeper注册中心");
+                    // zookeeper注册中心，
+                    ZookeeperRegister.getInstance().registerToRegistry(cls);
+                    break;
+                default:
+                    System.out.println("未使用注册中心，请指定");
+                    return;
+            }
         }
 
 
