@@ -5,11 +5,8 @@ import com.framework.rpc.register.entiy.RegistryConfigItem;
 import com.framework.rpc.register.entiy.RemoteClassEntity;
 import com.framework.rpc.register.zookeeper.ZookeeperRegister;
 import com.framework.rpc.register.zookeeper.ZookeeperRegistry;
-import com.framework.util.StringUtil;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -19,6 +16,9 @@ import java.util.stream.Collectors;
  */
 public class RegisterSelector {
 
+    /**
+     * 配置文件中的注册中心都会被添加到这里列表中
+     */
     private static List<RegistryConfigItem> enabledReg = new ArrayList<>();
 
     static {
@@ -26,7 +26,10 @@ public class RegisterSelector {
     }
 
 
-
+    /**
+     * 将class注册到启用的注册中心中
+     * @param cls
+     */
     public static void registerServiceToEnabledRegistry(Class cls) {
         System.out.println("into reg");
         // 寻找已经启用的注册中心（在 myrpc.registry 下的子节点（一层关系））
