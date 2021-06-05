@@ -52,7 +52,7 @@ public class MapperProxy implements InvocationHandler {
                 }
             }
             // 返回列表或者单个结果
-            if (!(returnType instanceof List || returnType instanceof Set)) {
+            if (returnType instanceof List || returnType instanceof Set) {
                 if (t != null) {
                     return DBTool.queryUsePrepareStatement(
                             sql,
