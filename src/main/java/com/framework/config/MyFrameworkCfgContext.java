@@ -1,6 +1,7 @@
 package com.framework.config;
 
 import com.framework.config.prop.reader.PropertyReader;
+import com.framework.config.yml.reader.YmlReader;
 
 import java.io.IOException;
 import java.util.*;
@@ -12,7 +13,7 @@ public class MyFrameworkCfgContext {
     // 加载主配置文件
     public static void loadMainProp (String mainPropName) throws IOException {
         Map<String, Object> res = null;
-        Map<String, Object> resYml = PropertyReader.readCfgFileByCfgName(mainPropName + ".yml");
+        Map<String, Object> resYml = YmlReader.readCfgFileByCfgName(mainPropName + ".yml");
         Map<String, Object> resProp = PropertyReader.readCfgFileByCfgName(mainPropName + ".prop");
         System.out.println(resYml + " " + resProp);
         if (resYml == null) {

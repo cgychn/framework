@@ -31,7 +31,7 @@ public class TransactionManager {
         // 如果强制创建 && connection没有被创建才会创建
         if (connection == null && forceCreate) {
             try {
-                Class.forName("com.mysql.jdbc.Driver");
+//                Class.forName("com.mysql.jdbc.Driver");
                 // 读配置文件
                 Connection newConnection = dbPool.getConnFromPool();
                 connectionThreadLocal.set(newConnection);
