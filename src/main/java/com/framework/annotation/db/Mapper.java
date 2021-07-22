@@ -7,4 +7,5 @@ import java.lang.annotation.*;
 @Documented
 public @interface Mapper {
     String name () default "";
+    String nameSpace () default "";
 }

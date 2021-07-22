@@ -11,40 +11,68 @@ import java.util.Map;
 public class LocalCache implements Cache {
 
     /**
-     * 缓存
+     * 内部缓存数据结构
      */
     private static Map<String, HashMap<String, CacheBean>> cacheMap = new HashMap<>();
 
+    /**
+     * 缓存（永不过时）
+     * @param nameSpace
+     * @param sql
+     * @param value
+     */
     @Override
     public void cacheSqlResult(String nameSpace, String sql, Object value) {
         cacheSqlResult(nameSpace, sql, value, -1L);
     }
 
+    /**
+     * 缓存sql的值
+     * @param nameSpace
+     * @param sql
+     * @param value
+     * @param timeOut
+     */
     @Override
-    public void cacheSqlResult(String nameSPace, String sql, Object value, Long timeOut) {
+    public void cacheSqlResult(String nameSpace, String sql, Object value, Long timeOut) {
         boolean hasNameSpace = false;
         synchronized (cacheMap) {
-            if (cacheMap.get(nameSPace) != null) {
+            if (cacheMap.get(nameSpace) != null) {
                 hasNameSpace = true;
+            } else {
+                cacheMap.put(nameSpace, new HashMap<>());
             }
         }
         if (hasNameSpace) {
-            Map<String, CacheBean> nameSpaceCache = cacheMap.get(nameSPace);
+            Map<String, CacheBean> nameSpaceCache = cacheMap.get(nameSpace);
             CacheBean cacheBean = new CacheBean();
             cacheBean.setTimeOut(timeOut);
-            cacheBean.setTimeOutTimeStamp(timeOut == -1 ? null : (new Date().getTime() + timeOut));
-            cacheBean.setNameSpace(nameSPace);
+            cacheBean.setTimeOutTimeStamp(
+                    timeOut == -1 ?
+                            null : (new Date().getTime() + timeOut)
+            );
+            cacheBean.setNameSpace(nameSpace);
             cacheBean.setSql(sql);
             cacheBean.setValue(value);
             nameSpaceCache.put(sql, cacheBean);
         }
     }
 
+    /**
+     * 清空所有缓存
+     * @param nameSpace
+     */
     @Override
     public void clearCache(String nameSpace) {
         cacheMap.remove(nameSpace);
     }
 
+    /**
+     * 拿缓存的值
+     * @param nameSpace
+     * @param sql
+     * @return
+     */
     @Override
     public Object getCacheValue(String nameSpace, String sql) {
         Map<String, CacheBean> nameSpaceCache = cacheMap.get(nameSpace);

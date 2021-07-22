@@ -19,12 +19,12 @@ public interface Cache {
 
     /**
      * 把sql的结果添加到缓存（带超时机制）
-     * @param nameSPace
+     * @param nameSpace
      * @param sql
      * @param value
      * @param timeOut
      */
-    void cacheSqlResult (String nameSPace, String sql, Object value, Long timeOut);
+    void cacheSqlResult (String nameSpace, String sql, Object value, Long timeOut);
 
     /**
      * 清空缓存

@@ -45,6 +45,14 @@ public class StringUtil {
         return String.valueOf(chars);
     }
 
+    /**
+     * 判断字符串是否为空串或者null
+     * @return
+     */
+    public static boolean isEmpty (String str) {
+        return str == null || "".equals(str);
+    }
+
     public static void main (String[] args ) {
         replaceFirstWithOutReg("select user_name as userName, login_name as loginName, password from t_user where user_name like '%#{userName}%'", "#{userName}", "?");
     }

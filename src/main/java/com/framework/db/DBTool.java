@@ -5,7 +5,10 @@ import com.framework.transaction.TransactionManager;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class DBTool {
 
@@ -19,7 +22,7 @@ public class DBTool {
      * @return
      * @throws SQLException
      */
-    public static <T> List<T> query (String sql, Class<T> t) throws SQLException {
+    public static <T> Collection<T> query (String sql, Class<T> t) throws SQLException {
         Connection connection = TransactionManager.getCurrentConnection(true);
         System.out.println(connection);
         Statement statement = connection.createStatement();
@@ -36,8 +39,11 @@ public class DBTool {
      * @throws SQLException
      */
     public static <T> T queryOne (String sql, Class<T> t) throws SQLException {
-        List<T> res = query(sql, t);
-        return res.size() > 0 ? res.get(0) : null;
+        Collection<T> res = query(sql, t);
+        if (res.size() > 1) {
+            throw new SQLException("多条结果");
+        }
+        return res.stream().collect(Collectors.toList()).get(0);
     }
 
     /**
@@ -84,7 +90,7 @@ public class DBTool {
      * @return
      * @throws SQLException
      */
-    public static <T> List<T> queryUsePrepareStatement (String sql, Object[] args, String[] jdbcTypes, Class<T> t) throws SQLException {
+    public static <T> Collection<T> queryUsePrepareStatement (String sql, Object[] args, String[] jdbcTypes, Class<T> t) throws SQLException {
         if (args.length != jdbcTypes.length) throw new SQLException("参数类型个数和值个数不对应！");
 
         PreparedStatement statement = loadPrepareStatement(sql, args, jdbcTypes);
@@ -103,8 +109,11 @@ public class DBTool {
      * @throws SQLException
      */
     public static <T> T queryOneUsePrepareStatement (String sql, Object[] args, String[] jdbcTypes, Class<T> t) throws SQLException {
-        List<T> res = queryUsePrepareStatement(sql, args, jdbcTypes, t);
-        return res.size() > 0 ? res.get(0) : null;
+        Collection<T> res = queryUsePrepareStatement(sql, args, jdbcTypes, t);
+        if (res.size() > 1) {
+            throw new SQLException("多条结果");
+        }
+        return res.stream().collect(Collectors.toList()).get(0);
     }
 
 
@@ -121,8 +130,8 @@ public class DBTool {
      * @return
      * @throws SQLException
      */
-    private static <T> List<T> forEachRes (ResultSet resultSet, Class<T> t) throws SQLException {
-        List<T> result = new ArrayList<>();
+    private static <T> Collection<T> forEachRes (ResultSet resultSet, Class<T> t) throws SQLException {
+        Collection<T> result = new LinkedList<>();
         ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
         while (resultSet.next()) {
             System.out.println(t);
@@ -131,7 +140,15 @@ public class DBTool {
             for (int i = 1; i <= columnCount; i++) {
                 jsonObject.put(resultSetMetaData.getColumnLabel(i), resultSet.getObject(resultSetMetaData.getColumnLabel(i)));
             }
-            result.add(JSONObject.toJavaObject(jsonObject, t));
+            // 单独处理Integer，Long，Short类型
+            if (t.equals(Integer.class) || t.equals(Long.class) || t.equals(Short.class)) {
+                if (columnCount == 1 && (jsonObject.get(resultSetMetaData.getColumnLabel(0)) instanceof Number)) {
+                    result.add(t.cast(jsonObject.get(resultSetMetaData.getColumnLabel(0))));
+                }
+            } else {
+                result.add(JSONObject.toJavaObject(jsonObject, t));
+            }
+
         }
         return result;
     }
