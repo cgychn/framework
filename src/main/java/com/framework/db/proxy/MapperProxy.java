@@ -76,13 +76,18 @@ public class MapperProxy implements InvocationHandler {
 
                 String cacheSqlHash = "";
                 if (cacheDetail != null) {
-                    // 启用了cache，生成cachehash todo
-                    cacheSqlHash = "";
+                    // 启用了cache，生成cachehash todo ?
+                    cacheSqlHash = query.sql()
+                            + " || "
+                            + method.getReturnType().getTypeName()
+                            + " || "
+                            + String.join(",", Arrays.stream(parameters).map(x -> {return x.getType().getTypeName();}).collect(Collectors.toList())) + " || "
+                            + String.join(",", Arrays.stream(args).map(x -> {return x.toString();}).collect(Collectors.toList()));
                     // 从cache中拿
                     Object val = getCacheInstance(cacheDetail.getCacheImplClass())
                             .getCacheValue(cacheDetail.getNameSpace(), cacheSqlHash);
                     if (val != null) {
-                        // 直接那缓存中的
+                        // 直接拿缓存中的
                         return val;
                     }
                 }
@@ -173,7 +178,11 @@ public class MapperProxy implements InvocationHandler {
                 cacheImplClass = Class.forName(enableCache.cacheImplClass());
                 timeout = enableCache.timeOut();
             }
-            return new CacheDetail.Builder().nameSpace(nameSpace).cacheImplClass(cacheImplClass).timeout(timeout).build();
+            return new CacheDetail.Builder()
+                    .nameSpace(nameSpace)
+                    .cacheImplClass(cacheImplClass)
+                    .timeout(timeout)
+                    .build();
         } catch (Exception e) {
             e.printStackTrace();
             return null;
