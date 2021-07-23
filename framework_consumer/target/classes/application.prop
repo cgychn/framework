@@ -1,0 +1,15 @@
+## 提供服务
+#framework.myrpc.provide.serviceName = testService
+#framework.myrpc.provide.serviceIp = 10.0.0.37
+#framework.myrpc.provide.servicePort = 9098
+#framework.myrpc.provide.justRegister = false
+#framework.myrpc.provide.justSubscribe = false
+
+# 注册中心
+framework.myrpc.registry.zookeeper.test1.ips = 192.168.85.30:2181
+framework.myrpc.registry.zookeeper.test1.timeout = 20000
+
+
+# 消费服务（当服务在配置文件中声名时，文件配置文件中的配置将自动替换注解中的配置文件）
+framework.myrpc.consume.testService.provider = 10.0.0.37:9098
+#framework.myrpc.consume.testService.destRemoteImplClassName = com
