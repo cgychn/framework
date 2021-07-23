@@ -1,8 +1,8 @@
-/framework/target/**
-/framework/framework.iml
+framework/target/**
+framework/framework.iml
 
-/framework_consumer/target/**
-/framework_consumer/framework_consumer.iml
+framework_consumer/target/**
+framework_consumer/framework_consumer.iml
 
-/framework_provider/target/**
-/framework_provider/framework_provider.iml
+framework_provider/target/**
+framework_provider/framework_provider.iml
