@@ -35,27 +35,24 @@ public class LocalCache implements Cache {
      */
     @Override
     public void cacheSqlResult(String nameSpace, String sql, Object value, Long timeOut) {
-        boolean hasNameSpace = false;
         synchronized (cacheMap) {
-            if (cacheMap.get(nameSpace) != null) {
-                hasNameSpace = true;
-            } else {
+            if (cacheMap.get(nameSpace) == null) {
                 cacheMap.put(nameSpace, new HashMap<>());
             }
         }
-        if (hasNameSpace) {
-            Map<String, CacheBean> nameSpaceCache = cacheMap.get(nameSpace);
-            CacheBean cacheBean = new CacheBean();
-            cacheBean.setTimeOut(timeOut);
-            cacheBean.setTimeOutTimeStamp(
-                    timeOut == -1 ?
-                            null : (new Date().getTime() + timeOut)
-            );
-            cacheBean.setNameSpace(nameSpace);
-            cacheBean.setSql(sql);
-            cacheBean.setValue(value);
-            nameSpaceCache.put(sql, cacheBean);
-        }
+        Map<String, CacheBean> nameSpaceCache = cacheMap.get(nameSpace);
+
+        CacheBean cacheBean = new CacheBean();
+        cacheBean.setTimeOut(timeOut);
+        cacheBean.setTimeOutTimeStamp(
+                timeOut == -1 ?
+                        null : (new Date().getTime() + timeOut)
+        );
+        cacheBean.setNameSpace(nameSpace);
+        cacheBean.setSql(sql);
+        cacheBean.setValue(value);
+        nameSpaceCache.put(sql, cacheBean);
+        System.out.println(cacheMap);
     }
 
     /**
@@ -78,8 +75,15 @@ public class LocalCache implements Cache {
         Map<String, CacheBean> nameSpaceCache = cacheMap.get(nameSpace);
         if (nameSpaceCache != null) {
             CacheBean bean = nameSpaceCache.get(sql);
-            if ((bean != null && new Date().getTime() < bean.getTimeOutTimeStamp()) || bean.getTimeOut() == -1) {
+            if (
+                    bean.getTimeOut() == -1 ||
+                    (
+                            bean != null
+                                    && new Date().getTime() < bean.getTimeOutTimeStamp()
+                    )
+            ) {
                 // 命中缓存
+                System.out.println("缓存命中");
                 return bean.getValue();
             }
             // 超时

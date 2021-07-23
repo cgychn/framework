@@ -45,7 +45,7 @@ public class DBPool {
 	) {
 		if(poolInstance == null) {
 			poolInstance = new DBPool(poolSize);
-			poolInstance.initPool(dbUsername , dbPassword , url, driverName);
+			poolInstance.initPool(dbUsername, dbPassword, url, driverName);
 		}
 		return poolInstance;
 	}
@@ -68,7 +68,7 @@ public class DBPool {
 	 * @param driverName
 	 * @return
 	 */
-	private List<Connection> initPool(String dbUsername , String dbPassword , String url, String driverName){
+	private List<Connection> initPool(String dbUsername, String dbPassword, String url, String driverName){
 		//根据给定的连接池大小初始化连接
 		System.out.println("初始化连接池");
 		try {

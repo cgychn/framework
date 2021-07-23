@@ -39,7 +39,7 @@ public class MapperProxy implements InvocationHandler {
 
         // 拿到这个方法的缓存信息
         CacheDetail cacheDetail = getMapperCacheDetail(method);
-
+        System.out.println(cacheDetail);
         // 修改操作
         if (method.isAnnotationPresent(Modifying.class)) {
             int rows = DBTool.updateUsePrepareStatement(
@@ -71,11 +71,14 @@ public class MapperProxy implements InvocationHandler {
 
             // 进入sql查询之前，先从缓存拿
             // 返回列表或者单个结果
-            if (returnType instanceof Collection) {
+            System.out.println(((Type) method.getReturnType()).getTypeName());
+            if (Collection.class.isAssignableFrom(method.getReturnType())) {
+                System.out.println("return type is collection");
                 Collection collection;
 
                 String cacheSqlHash = "";
                 if (cacheDetail != null) {
+                    System.out.println("启用缓存");
                     // 启用了cache，生成cachehash todo ?
                     cacheSqlHash = query.sql()
                             + " || "
@@ -84,6 +87,7 @@ public class MapperProxy implements InvocationHandler {
                             + String.join(",", Arrays.stream(parameters).map(x -> {return x.getType().getTypeName();}).collect(Collectors.toList())) + " || "
                             + String.join(",", Arrays.stream(args).map(x -> {return x.toString();}).collect(Collectors.toList()));
                     // 从cache中拿
+                    System.out.println("cacheSqlHash : " + cacheSqlHash);
                     Object val = getCacheInstance(cacheDetail.getCacheImplClass())
                             .getCacheValue(cacheDetail.getNameSpace(), cacheSqlHash);
                     if (val != null) {
@@ -109,15 +113,16 @@ public class MapperProxy implements InvocationHandler {
                     );
                 }
 
-                if (returnType instanceof List) {
+                if ((Type) method.getReturnType() instanceof List) {
                     collection = (Set) collection.stream().collect(Collectors.toSet());
                 } else if (returnType instanceof Set) {
                     collection = (List) collection.stream().collect(Collectors.toList());
                 }
 
-                Class returnTypeClass = Class.forName(returnType.getTypeName());
+                Class returnTypeClass = method.getReturnType();
                 if (cacheDetail != null) {
                     // 缓存到缓存中
+                    System.out.println("cache to cache, " + cacheSqlHash);
                     getCacheInstance(cacheDetail.getCacheImplClass()).cacheSqlResult(
                             cacheDetail.getNameSpace(),
                             cacheSqlHash,
@@ -128,6 +133,7 @@ public class MapperProxy implements InvocationHandler {
 
                 return returnTypeClass.cast(collection);
             } else {
+                System.out.println("return type is not collection");
                 if (returnType.equals(Void.TYPE)) {
                     throw new Exception("查询类的sql返回值不能为空");
                 }
@@ -151,6 +157,7 @@ public class MapperProxy implements InvocationHandler {
             // 如果没有被注解说明没有启用缓存
             if (!method.getDeclaringClass().isAnnotationPresent(EnableCache.class)
                     && !method.isAnnotationPresent(EnableCache.class)) {
+                System.out.println("mapper 未启用缓存");
                 return null;
             }
             String nameSpace = null;

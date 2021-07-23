@@ -50,4 +50,15 @@ public class CacheBean {
     public void setNameSpace(String nameSpace) {
         this.nameSpace = nameSpace;
     }
+
+    @Override
+    public String toString() {
+        return "CacheBean{" +
+                "sql='" + sql + '\'' +
+                ", timeOut=" + timeOut +
+                ", value=" + value +
+                ", nameSpace='" + nameSpace + '\'' +
+                ", timeOutTimeStamp=" + timeOutTimeStamp +
+                '}';
+    }
 }
