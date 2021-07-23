@@ -39,7 +39,7 @@
     </option>
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
   <component name="MavenImportPreferences">
     <option name="generalSettings">
@@ -61,7 +61,7 @@
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
     <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1616939273306" />
-    <property name="last_opened_file_path" value="D:/ideapro/framework_consumer" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../framework_provider" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="nodejs_package_manager_path" value="npm" />
@@ -149,15 +149,13 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration default="true" type="ArquillianTestNG" factoryName="" nameIsGenerated="true">
+    <configuration default="true" type="ArquillianJUnit" factoryName="" nameIsGenerated="true">
       <option name="arquillianRunConfiguration">
         <value>
           <option name="containerStateName" value="" />
         </value>
       </option>
-      <option name="TEST_OBJECT" value="CLASS" />
-      <properties />
-      <listeners />
+      <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -215,6 +213,7 @@
       <workItem from="1625722806253" duration="609000" />
       <workItem from="1626916173451" duration="13888000" />
       <workItem from="1627022009506" duration="9782000" />
+      <workItem from="1627032146813" duration="107000" />
     </task>
     <servers />
   </component>
@@ -243,10 +242,10 @@
     </state>
     <state x="765" y="225" key="#com.intellij.ide.util.MemberChooser/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1627029735935" />
     <state x="765" y="225" key="#com.intellij.ide.util.MemberChooser/0.0.1920.1040@0.0.1920.1040" timestamp="1626925166368" />
-    <state x="656" y="258" key="FileChooserDialogImpl" timestamp="1627022336163">
+    <state x="656" y="258" key="FileChooserDialogImpl" timestamp="1627032204234">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="656" y="258" key="FileChooserDialogImpl/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1627022336163" />
+    <state x="656" y="258" key="FileChooserDialogImpl/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1627032204234" />
     <state x="656" y="258" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1619752302543" />
     <state width="1877" height="279" key="GridCell.Tab.0.bottom" timestamp="1627031179096">
       <screen x="0" y="0" width="1920" height="1040" />
