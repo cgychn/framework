@@ -3,154 +3,174 @@ package com.framework.util;
 import com.framework.config.MyFrameworkCfgContext;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+//framework.threadpool.size
+
 public class ThreadPool {
 
-	//这是线程池，用于维护一些线程
-	private static List<MyTask> threads = new ArrayList<MyTask>();
-	//这是线程池的实例
-	private static ThreadPool thPoolInstance = null;
-	//这是任务队列
-	private List<Runnable> taskQueue = new ArrayList<Runnable>();
-	//线程池中可用线程，使用线程安全型int记录
+	private static List<MyTask> threads = new ArrayList();
+	private static List<Runnable> taskQueue = new LinkedList<>();
 	public static AtomicInteger available = new AtomicInteger(0);
-	public static AtomicInteger taskExecuted = new AtomicInteger(0);
-	private static int poolSize = 0;
+	private static int poolSize = MyFrameworkCfgContext.get("framework.threadpool.size", Integer.class) == null ?
+			10 :
+			MyFrameworkCfgContext.get("framework.threadpool.size", Integer.class);
+	private static ThreadPool instance = null;
 
-	//私有化构造方法
-	private ThreadPool() {
+	private ThreadPool () {}
 
+	/**
+	 * 拿线程池的单例
+	 * @return
+	 */
+	public synchronized static ThreadPool getInstance() {
+		if (instance == null) {
+			instance = new ThreadPool();
+		}
+		return instance;
 	}
 
-	//得到线程池的单例
-	public static synchronized ThreadPool getThreadPoolInstance(int poolSize) {
-		if(ThreadPool.thPoolInstance == null) {
-			System.out.println("线程池初始化中。。。。。。");
-			ThreadPool.thPoolInstance = new ThreadPool();
-			//初始化poolSize个的线程池
-			for(int i = 0 ; i < poolSize ; i++) {
-				ThreadPool.MyTask myTask = ThreadPool.thPoolInstance.new MyTask();
-				myTask.setName("Thread-->" + i);
+	/**
+	 * 向线程池中插入新的空闲线程
+	 */
+	private void addFreeThreadToPool () {
+		synchronized (threads) {
+			if (threads.size() < poolSize) {
+				MyTask myTask = this.new MyTask();
 				threads.add(myTask);
-			}
-			ThreadPool.poolSize = poolSize;
-			//设置线程池中可用的线程数量
-			ThreadPool.available.getAndAdd(poolSize);
-			System.out.println("线程池初始化完毕，开始启动线程池。。。。。。");
-			for(ThreadPool.MyTask myTask : threads) {
 				myTask.start();
+				available.getAndAdd(1);
 			}
-		}else {
-			System.out.println("线程池已经被初始化了");
+//			System.out.println("线程池中线程数量：" + threads.size() + "；队列数量：" + taskQueue.size() + "；可用线程数量：" + available.get());
+			threads.notifyAll();
 		}
-		return ThreadPool.thPoolInstance;
 	}
 
-	public static synchronized ThreadPool getThreadPoolInstance() {
-		Integer poolSize = MyFrameworkCfgContext.get("framework.threadpool.size", Integer.class);
-		if (poolSize == null || poolSize.intValue() < 0) {
-			poolSize = 20;
+	/**
+	 * 从线程池中移除空闲任务
+	 * @param task
+	 */
+	protected void removeFreeThreadFromPool (MyTask task) {
+		synchronized (threads) {
+			try {
+				threads.remove(task);
+				available.getAndAdd(-1);
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+//				System.out.println("销毁了一个线程：" + threads.size() + "；队列数量：" + taskQueue.size() + "；可用线程数量：" + available.get());
+				threads.notifyAll();
+			}
 		}
-		return getThreadPoolInstance(poolSize);
 	}
 
-
-	//执行任务
-	public void exeTasks(ArrayList<Runnable> threadList) {
-		//在任务队列中添加任务
+	/**
+	 * 执行多任务
+	 * @param threadList
+	 */
+	public void exeTasks(List<Runnable> threadList) {
 		synchronized (taskQueue) {
 			for(Runnable thread : threadList) {
 				taskQueue.add(thread);
-				taskExecuted.getAndAdd(1);
+				if (taskQueue.size() > threads.size()) {
+					addFreeThreadToPool();
+				}
 			}
 			taskQueue.notifyAll();
 		}
 
 	}
 
-	//执行单个任务
+	/**
+	 * 执行单任务
+	 * @param thread
+	 */
 	public void exeTask(Runnable thread) {
-		//在任务队列中添加任务
 		synchronized (taskQueue) {
 			taskQueue.add(thread);
-			taskExecuted.getAndAdd(1);
+			if (taskQueue.size() > available.get()) {
+				addFreeThreadToPool();
+			}
 			taskQueue.notifyAll();
 		}
-
 	}
 
 	@Override
 	public String toString() {
-		// TODO Auto-generated method stub
-		return "可用线程数量为：" + ThreadPool.available;
+		return "可用线程数量为：" + ThreadPool.available.get() +
+				"; 线程池中线程数量为：" + ThreadPool.threads.size() +
+				"; 任务队列数量为：" + taskQueue.size() +
+				"; 线程池最大并行处理任务数量：" + ThreadPool.poolSize;
 	}
 
 
-	//线程内部类（用于处理任务）
+	/**
+	 * 任务类
+	 */
 	class MyTask extends Thread{
-
 		private volatile boolean canRun = true;
-
 		private volatile boolean runningState = false;
-
 		//运行任务
 		@Override
 		public void run() {
-			// TODO Auto-generated method stub
-			//从任务队列中取出一个任务执行
-			try {
-				while (this.canRun) {
-
-					//如果任务队列中获取一个任务执行
-					Runnable thread = null;
-					synchronized (taskQueue) {
-						while(this.canRun && taskQueue.isEmpty()) {
-							//System.out.println("可用线程数量为：" + ThreadPool.available.get());
-							//进入等待，等待任务到达
+			while (this.canRun) {
+				// 从任务队列中抢占一个任务
+				Runnable task = null;
+				synchronized (taskQueue) {
+					// 线程空转次数
+					int waitTime = 0;
+					// 扫描任务队列
+					while (this.canRun && taskQueue.isEmpty()) {
+						try {
 							taskQueue.wait(10);
-							if (ThreadPool.available.get() == ThreadPool.poolSize) {
-								//线程可以被执行，并且所有的任务都完成了
-								//System.out.println("一共执行了： " + taskExcuted.get() + " 个任务");
-//								for (HashMap<String, String> hashMap : DataCollectTask.resList) {
-//									System.out.println(hashMap);
-//								}
-								//这里说明所有的任务都被执行完毕
+							// 等待超时判断，如果线程空闲时间太长，就销毁线程，并从线程池中移除 10 * 3000 ms （30秒没拿到任务就销毁自己）
+							waitTime++;
+							if (waitTime == 3000) {
+								removeFreeThreadFromPool(this);
+								this.canRun = false;
+								return;
 							}
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+							// 出错将当前线程移除
+							removeFreeThreadFromPool(this);
+							this.canRun = false;
+							return;
 						}
-						if(!taskQueue.isEmpty()) {
-							//从队列中取得一个任务执行
-							thread = taskQueue.remove(0);
-							ThreadPool.available.getAndAdd(-1);
-							//System.out.println("(拿取)空闲线程数量为：" + ThreadPool.available.get());
-							//System.out.println("待执行任务数量为：" + taskQueue.size());
-						}
-						taskQueue.notifyAll();
 					}
-					if(thread != null) {
+					if (!taskQueue.isEmpty()) {
+						//从队列中取得一个任务执行
+						task = taskQueue.remove(0);
+					}
+					taskQueue.notifyAll();
+				}
+				// 如果抢占任务失败，task为空
+				try {
+					if (task != null) {
+						// 取到任务后，线程进入工作状态，available -1
+						ThreadPool.available.getAndAdd(-1);
 						//设置当前的线程的运行状态为运行
 						this.runningState = true;
-						thread.run();
-						ThreadPool.available.getAndAdd(1);
-						//System.out.println("(返回)空闲线程数量为：" + ThreadPool.available.get());
+						task.run();
 					}
-					thread = null;
+				} catch (Exception e) {
+					e.printStackTrace();
+				} finally {
 					//运行完毕后，将线程的状态置为空闲
 					this.runningState = false;
+					// available +1
+					ThreadPool.available.getAndAdd(1);
 				}
-			}catch (Exception e) {
-				// TODO: handle exception
-				e.printStackTrace();
-			}finally{
-				//出错，将线程的状态置为未运行
-				this.runningState = false;
 			}
+
 		}
 
-		//注销线程
+		/**
+		 * 注销线程
+		 */
 		public void disableThisThread() {
-			// TODO Auto-generated method stub
 			//等待线程运行完毕
 			while (!this.runningState) {
 				this.canRun = false;
@@ -158,7 +178,9 @@ public class ThreadPool {
 			}
 		}
 
-		//重新激活该线程
+		/**
+		 * 重新激活
+		 */
 		public void reActiveThisThread() {
 			this.canRun = true;
 		}

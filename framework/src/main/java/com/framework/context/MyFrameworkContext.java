@@ -2,6 +2,7 @@ package com.framework.context;
 
 import com.framework.ioc.IocEntity;
 import com.framework.util.StringUtil;
+import com.framework.util.ThreadPool;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -12,6 +13,8 @@ public class MyFrameworkContext {
     public static Set<IocEntity> myContainer = new HashSet<>();
 
     public static Class mainClass = null;
+
+    private static ThreadPool threadPool;
 
     public static void set (Class cls, Object obj) throws Exception {
         String[] clsParts = cls.getName().split("\\.");
@@ -88,5 +91,11 @@ public class MyFrameworkContext {
     }
 
 
+    public static void setFrameWorkThreadPool(ThreadPool threadPool) {
+        MyFrameworkContext.threadPool = threadPool;
+    }
 
+    public static ThreadPool getFrameWorkThreadPool() {
+        return threadPool;
+    }
 }

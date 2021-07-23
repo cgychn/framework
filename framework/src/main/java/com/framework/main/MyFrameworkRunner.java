@@ -3,9 +3,11 @@ package com.framework.main;
 import com.framework.annotation.framework.FrameworkStarter;
 import com.framework.config.MyFrameworkCfgContext;
 import com.framework.context.MyClassLoader;
+import com.framework.context.MyFrameworkContext;
 import com.framework.ioc.ObjectAssembler;
 import com.framework.ioc.injector.*;
 import com.framework.rpc.server.RpcServer;
+import com.framework.util.ThreadPool;
 
 import java.io.IOException;
 import java.util.List;
@@ -33,7 +35,9 @@ public class MyFrameworkRunner {
         } catch (IOException e) {
             e.printStackTrace();
         }
-//        System.out.println("bbbbbbbbb");
+
+        // 加载主框架线程池到上下文
+        MyFrameworkContext.setFrameWorkThreadPool(ThreadPool.getInstance());
 
         // 注入容器
         classes.forEach(x -> {

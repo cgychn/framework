@@ -1,6 +1,7 @@
 package com.framework.rpc.server;
 
 import com.framework.config.MyFrameworkCfgContext;
+import com.framework.context.MyFrameworkContext;
 import com.framework.rpc.task.RPCTask;
 import com.framework.util.ThreadPool;
 
@@ -11,7 +12,7 @@ import java.net.Socket;
 public class RpcServer {
     ServerSocket serverSocket;
     // 引入线程池
-    ThreadPool threadPool = ThreadPool.getThreadPoolInstance();
+    ThreadPool threadPool = MyFrameworkContext.getFrameWorkThreadPool();
 
     public RpcServer () throws IOException {
         serverSocket = new ServerSocket(MyFrameworkCfgContext.get("framework.myrpc.provide.servicePort", Integer.class));
