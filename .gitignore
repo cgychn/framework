@@ -3,11 +3,14 @@
 framework/target/**
 framework/framework.iml
 framework/.git
+framework/.idea
 
 framework_consumer/target/**
 framework_consumer/framework_consumer.iml
-framework/.git
+framework_consumer/.git
+framework_consumer/.idea
 
 framework_provider/target/**
 framework_provider/framework_provider.iml
-framework/.git
+framework_provider/.git
+framework_provider/.idea
