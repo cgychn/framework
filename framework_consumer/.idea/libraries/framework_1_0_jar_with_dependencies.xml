@@ -1,7 +1,7 @@
 <component name="libraryTable">
   <library name="framework-1.0-jar-with-dependencies">
     <CLASSES>
-      <root url="jar://E:/framework/framework/target/framework-1.0-jar-with-dependencies.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../framework/target/framework-1.0-jar-with-dependencies.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

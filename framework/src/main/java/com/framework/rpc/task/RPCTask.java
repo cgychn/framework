@@ -2,7 +2,6 @@ package com.framework.rpc.task;
 
 
 import com.framework.context.MyFrameworkContext;
-import com.framework.test.User;
 import com.framework.util.InputStreamUtil;
 
 import java.io.*;

@@ -9,5 +9,8 @@
         <module name="framework_provider" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="framework_provider" target="8" />
+    </bytecodeTargetLevel>
   </component>
 </project>
