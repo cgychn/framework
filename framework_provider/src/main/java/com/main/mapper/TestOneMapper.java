@@ -4,7 +4,6 @@ import com.framework.annotation.db.EnableCache;
 import com.framework.annotation.db.Mapper;
 import com.framework.annotation.db.Param;
 import com.framework.annotation.db.Query;
-import com.framework.test.TestMapper;
 import com.main.entity.TestTable;
 
 import java.util.List;
