@@ -6,6 +6,7 @@ import com.framework.context.MyClassLoader;
 import com.framework.context.MyFrameworkContext;
 import com.framework.ioc.ObjectAssembler;
 import com.framework.ioc.injector.*;
+import com.framework.rpc.client.ClientSocketHandlerPool;
 import com.framework.rpc.server.RpcServer;
 import com.framework.util.ThreadPool;
 
@@ -38,6 +39,7 @@ public class MyFrameworkRunner {
 
         // 加载主框架线程池到上下文
         MyFrameworkContext.setFrameWorkThreadPool(ThreadPool.getInstance());
+        MyFrameworkContext.setFrameWorkClientSocketPool(ClientSocketHandlerPool.getInstance());
 
         // 注入容器
         classes.forEach(x -> {

@@ -16,7 +16,7 @@ public class ThreadPool {
 	public static AtomicInteger available = new AtomicInteger(0);
 	private static int poolSize = MyFrameworkCfgContext.get("framework.threadpool.size", Integer.class) == null ?
 			10 :
-			MyFrameworkCfgContext.get("framework.threadpool.size", Integer.class);
+			MyFrameworkCfgContext.get("framework.threadPool.size", Integer.class);
 	private static ThreadPool instance = null;
 
 	private ThreadPool () {}

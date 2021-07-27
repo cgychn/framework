@@ -2,18 +2,19 @@ package com.framework.rpc.proxy;
 
 import com.framework.annotation.rpc.RPCService;
 import com.framework.config.MyFrameworkCfgContext;
+import com.framework.context.MyFrameworkContext;
+import com.framework.rpc.client.ClientMessageHandler;
+import com.framework.rpc.client.ClientSocketHandlerPool;
 import com.framework.rpc.register.RegisterSelector;
 import com.framework.rpc.register.entiy.RemoteClassEntity;
-import com.framework.rpc.register.zookeeper.ZookeeperRegistry;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Proxy;
-import java.net.Socket;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class RPCServiceProxy implements InvocationHandler {
 
@@ -23,6 +24,8 @@ public class RPCServiceProxy implements InvocationHandler {
     String destRemoteImplClassName = "";
     Boolean directConnect = false;
     String destRegistry = "";
+
+    private static ClientSocketHandlerPool clientSocketPool = MyFrameworkContext.getClientSocketHandlerPool();
 
     public Object bind (Class cls) {
         // 获取远程服务的相应信息
@@ -84,25 +87,38 @@ public class RPCServiceProxy implements InvocationHandler {
 
         // 用socket调用这个远程方法
         String provider = remoteClassEntity.getProvider();
+        String className = remoteClassEntity.getImplClassName();
         String[] parts = provider.split(":");
         String ip = parts[0];
         Integer port = Integer.parseInt(parts[1]);
+
+        AtomicReference<Object> val = null;
+
         // 通信服务提供者
-        Socket socket = new Socket(ip, port);
-        OutputStream outputStream = socket.getOutputStream();
-        // 读写流的循序：类名 -> 方法名 -> 参数类型 -> 参数值
-        ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
-        // 写类名
-        objectOutputStream.writeObject(remoteClassEntity.getImplClassName());
-        // 写方法名
-        objectOutputStream.writeObject(methodName);
-        // 写方法参数类型
-        objectOutputStream.writeObject(methodParamTypes);
-        // 写方法参数值
-        objectOutputStream.writeObject(args);
-        // 接受服务提供者返回
-        ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
+        ClientMessageHandler handler = clientSocketPool.getSocketHandlerFromPool(ip, port);
+        handler.sendMessage((outputStream) -> {
+            try {
+                // 读写流的循序：类名 -> 方法名 -> 参数类型 -> 参数值
+                ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+                // 写类名
+                objectOutputStream.writeObject(className);
+                // 写方法名
+                objectOutputStream.writeObject(methodName);
+                // 写方法参数类型
+                objectOutputStream.writeObject(methodParamTypes);
+                // 写方法参数值
+                objectOutputStream.writeObject(args);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }, (obj) -> {
+            // 接受服务提供者返回
+            val.set(obj);
+            // 返还socket链接到连接池
+            clientSocketPool.returnHandlerToPool(handler, ip, port);
+        });
+
         // 转化对象并返回
-        return method.getReturnType().cast(objectInputStream.readObject());
+        return method.getReturnType().cast(val.get());
     }
 }

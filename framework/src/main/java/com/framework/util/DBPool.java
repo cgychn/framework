@@ -76,7 +76,7 @@ public class DBPool {
 			for (int i = 0 ; i < DBPool.poolSize ; i ++) {
 				//添加连接到连接池
 				DBPool.connPool.add(
-							DriverManager.getConnection(url , dbUsername , dbPassword)
+							DriverManager.getConnection(url, dbUsername, dbPassword)
 						);
 			}
 		} catch (SQLException e) {

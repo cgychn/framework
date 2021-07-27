@@ -8,19 +8,26 @@ import com.framework.util.ThreadPool;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class RpcServer {
     ServerSocket serverSocket;
     // 引入线程池
     ThreadPool threadPool = MyFrameworkContext.getFrameWorkThreadPool();
+    static Integer serverSocketMaxAcceptCount = MyFrameworkCfgContext.get("framework.serverSocket.maxConnectedSize", Integer.class) == null ? 50 : MyFrameworkCfgContext.get("framework.serverSocket.maxConnectedSize", Integer.class);
 
     public RpcServer () throws IOException {
         serverSocket = new ServerSocket(MyFrameworkCfgContext.get("framework.myrpc.provide.servicePort", Integer.class));
-
+        AtomicInteger onlineSocketCount = new AtomicInteger(0);
         while (true) {
-            Socket socket = serverSocket.accept();
-            // 开线程处理socket
-            threadPool.exeTask(new RPCTask(socket));
+            if (serverSocketMaxAcceptCount.intValue() < serverSocketMaxAcceptCount) {
+                Socket socket = serverSocket.accept();
+                // 开线程处理socket
+                onlineSocketCount.getAndAdd(1);
+                threadPool.exeTask(new RPCTask(socket, onlineSocketCount));
+            } else {
+                continue;
+            }
         }
     }
 

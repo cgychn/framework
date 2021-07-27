@@ -1,6 +1,7 @@
 package com.framework.context;
 
 import com.framework.ioc.IocEntity;
+import com.framework.rpc.client.ClientSocketHandlerPool;
 import com.framework.util.StringUtil;
 import com.framework.util.ThreadPool;
 
@@ -15,6 +16,8 @@ public class MyFrameworkContext {
     public static Class mainClass = null;
 
     private static ThreadPool threadPool;
+
+    private static ClientSocketHandlerPool clientSocketPool;
 
     public static void set (Class cls, Object obj) throws Exception {
         String[] clsParts = cls.getName().split("\\.");
@@ -97,5 +100,13 @@ public class MyFrameworkContext {
 
     public static ThreadPool getFrameWorkThreadPool() {
         return threadPool;
+    }
+
+    public static void setFrameWorkClientSocketPool(ClientSocketHandlerPool clientSocketPool) {
+        MyFrameworkContext.clientSocketPool = clientSocketPool;
+    }
+
+    public static ClientSocketHandlerPool getClientSocketHandlerPool () {
+        return clientSocketPool;
     }
 }
