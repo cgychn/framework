@@ -54,24 +54,33 @@ public class ServerMessageHandler {
             Class[] paramTypes = null;
             Object[] args = null;
             // 不断读取服务器的数据
-            while (true) {
+            while (true && !isException.get()) {
+                System.out.println("进入循环");
                 Object object = objectInputStream.readObject();
+                System.out.println("读取到obj：" + object);
                 // 判断是否是心跳包
                 if (object instanceof HeartBeatPong) {
                     handleHeartBeat(object);
                 } else {
                     // 处理正常业务逻辑
                     if (implClassName == null) {
-                        implClassName = (String) objectInputStream.readObject();
+                        System.out.println("set implClassName");
+                        implClassName = (String) object;
+                        continue;
                     }
                     if (methodName == null) {
-                        methodName = (String) objectInputStream.readObject();
+                        System.out.println("set methodName");
+                        methodName = (String) object;
+                        continue;
                     }
                     if (paramTypes == null) {
-                        paramTypes = (Class[]) objectInputStream.readObject();
+                        System.out.println("set paramTypes");
+                        paramTypes = (Class[]) object;
+                        continue;
                     }
                     if (args == null) {
-                        args = (Object[]) objectInputStream.readObject();
+                        System.out.println("set args");
+                        args = (Object[]) object;
                     }
                     // 直到接受到全部的参数，才处理消息
                     handleMessage(implClassName, methodName, paramTypes, args);

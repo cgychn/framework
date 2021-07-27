@@ -3,16 +3,11 @@ package com.framework.rpc.client;
 import com.framework.config.MyFrameworkCfgContext;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.net.SocketAddress;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Handler;
 
 public class ClientSocketHandlerPool {
 
@@ -24,7 +19,7 @@ public class ClientSocketHandlerPool {
     static private ConcurrentHashMap<String, ConcurrentLinkedQueue<ClientMessageHandler>> pool = new ConcurrentHashMap<>();
     static private HashMap<String, AtomicInteger> socketPoolCountMap = new HashMap<>();
     static Integer socketPoolMaxCount = MyFrameworkCfgContext.get("framework.clientSocketPool.size", Integer.class) == null ?
-            0 : MyFrameworkCfgContext.get("framework.socketPool.size", Integer.class);
+            0 : MyFrameworkCfgContext.get("framework.clientSocketPool.size", Integer.class);
 
     public static synchronized ClientSocketHandlerPool getInstance() {
         if (instance == null) {
@@ -52,12 +47,16 @@ public class ClientSocketHandlerPool {
             }
         }
 
+        System.out.println(socketPoolCountMap);
+        System.out.println(pool);
+
         // 处理连接池中的连接
         synchronized (pool.get(key)) {
             while (true) {
                 // 链接池中无可用链接且连接池大小已达上限（等待或者直接返回）
-                if (pool.get(key).size() == 0 && socketPoolCountMap.get(key).get() == socketPoolMaxCount) {
-                    wait();
+                if (pool.get(key).size() == 0
+                        && socketPoolCountMap.get(key).get() == socketPoolMaxCount) {
+                    pool.get(key).wait();
                 }
 
                 // 连接池中有可用链接（直接取链接）
@@ -103,7 +102,7 @@ public class ClientSocketHandlerPool {
             // 判断这个连接是否时异常连接，异常就不放入连接池
             if (!clientMessageHandler.getIsException().get()) {
                 pool.get(key).offer(clientMessageHandler);
-                notifyAll();
+                pool.get(key).notifyAll();
             }
         }
     }

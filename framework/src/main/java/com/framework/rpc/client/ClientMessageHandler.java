@@ -29,7 +29,7 @@ public class ClientMessageHandler {
     public void bindSocket (Socket socket, MessageSendErrorCallBack messageSendErrorCallBack) {
         this.socket = socket;
         this.messageSendErrorCallBack = messageSendErrorCallBack;
-        this.startListenMessage();
+        new Thread(() -> { this.startListenMessage(); }).start();
     }
 
     /**
@@ -40,8 +40,9 @@ public class ClientMessageHandler {
             InputStream inputStream = this.socket.getInputStream();
             ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
             // 不断读取服务器的数据
-            while (true) {
+            while (true && !isException.get()) {
                 Object object = objectInputStream.readObject();
+                System.out.println("收到返回：" + object);
                 // 判断是否时心跳包
                 if (object instanceof HeartBeatPing) {
                     handleHeartBeat(object);

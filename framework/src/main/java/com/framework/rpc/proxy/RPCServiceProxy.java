@@ -8,13 +8,14 @@ import com.framework.rpc.client.ClientSocketHandlerPool;
 import com.framework.rpc.register.RegisterSelector;
 import com.framework.rpc.register.entiy.RemoteClassEntity;
 
-import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Proxy;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class RPCServiceProxy implements InvocationHandler {
 
@@ -67,8 +68,6 @@ public class RPCServiceProxy implements InvocationHandler {
             methodParamTypes[i] = methodParams[i].getType();
         }
 
-
-
         RemoteClassEntity remoteClassEntity = null;
         if (this.directConnect) {
             // 直连，不通过注册中心找配置，直接向服务提供者索要配置
@@ -84,7 +83,6 @@ public class RPCServiceProxy implements InvocationHandler {
             );
         }
 
-
         // 用socket调用这个远程方法
         String provider = remoteClassEntity.getProvider();
         String className = remoteClassEntity.getImplClassName();
@@ -92,7 +90,7 @@ public class RPCServiceProxy implements InvocationHandler {
         String ip = parts[0];
         Integer port = Integer.parseInt(parts[1]);
 
-        AtomicReference<Object> val = null;
+        AtomicReference<Object> val = new AtomicReference<>();
 
         // 通信服务提供者
         ClientMessageHandler handler = clientSocketPool.getSocketHandlerFromPool(ip, port);
@@ -108,6 +106,9 @@ public class RPCServiceProxy implements InvocationHandler {
                 objectOutputStream.writeObject(methodParamTypes);
                 // 写方法参数值
                 objectOutputStream.writeObject(args);
+                objectOutputStream.flush();
+                System.out.println(className + "," + methodName + "," + methodParamTypes + "," + args);
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -116,9 +117,18 @@ public class RPCServiceProxy implements InvocationHandler {
             val.set(obj);
             // 返还socket链接到连接池
             clientSocketPool.returnHandlerToPool(handler, ip, port);
+            synchronized (val) {
+                val.notify();
+            }
         });
+
+        // 等待结果返回
+        synchronized (val) {
+            val.wait();
+        }
 
         // 转化对象并返回
         return method.getReturnType().cast(val.get());
+
     }
 }

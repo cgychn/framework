@@ -7,14 +7,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-//framework.threadpool.size
+//framework.threadPool.size
 
 public class ThreadPool {
 
 	private static List<MyTask> threads = new ArrayList();
 	private static List<Runnable> taskQueue = new LinkedList<>();
 	public static AtomicInteger available = new AtomicInteger(0);
-	private static int poolSize = MyFrameworkCfgContext.get("framework.threadpool.size", Integer.class) == null ?
+	private static int poolSize = MyFrameworkCfgContext.get("framework.threadPool.size", Integer.class) == null ?
 			10 :
 			MyFrameworkCfgContext.get("framework.threadPool.size", Integer.class);
 	private static ThreadPool instance = null;

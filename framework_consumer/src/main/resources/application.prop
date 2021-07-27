@@ -12,4 +12,5 @@ framework.myrpc.registry.zookeeper.test1.timeout = 20000
 
 # 消费服务（当服务在配置文件中声名时，文件配置文件中的配置将自动替换注解中的配置文件）
 framework.myrpc.consume.testService.provider = 10.0.0.37:9098
+framework.clientSocketPool.size = 10
 #framework.myrpc.consume.testService.destRemoteImplClassName = com

@@ -20,7 +20,7 @@ public class RpcServer {
         serverSocket = new ServerSocket(MyFrameworkCfgContext.get("framework.myrpc.provide.servicePort", Integer.class));
         AtomicInteger onlineSocketCount = new AtomicInteger(0);
         while (true) {
-            if (serverSocketMaxAcceptCount.intValue() < serverSocketMaxAcceptCount) {
+            if (serverSocketMaxAcceptCount.intValue() > onlineSocketCount.get()) {
                 Socket socket = serverSocket.accept();
                 // 开线程处理socket
                 onlineSocketCount.getAndAdd(1);

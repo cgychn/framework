@@ -17,15 +17,19 @@ public class Main {
 
         TestService testService = MyFrameworkContext.getJustByClass(TestService.class);
 
+//        String res = testService.test("aaa", 0);
+//
+//        List<TestTable> lists = testService.testList();
+//
+//        TestTable testTable = testService.testOne(0);
+
         System.out.println(testService.test("aaa", 123));
 
-        List<TestTable> lists = testService.testList();
-
-        TestTable testTable = testService.testOne(0);
-
-        System.out.println(lists);
-
-        System.out.println(testTable);
+//        System.out.println(res);
+//
+//        System.out.println(lists);
+//
+//        System.out.println(testTable);
     }
 
 }
