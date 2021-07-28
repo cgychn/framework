@@ -145,7 +145,7 @@ public class ServerMessageHandler {
             objectOutputStream.writeObject(msg[i]);
         }
         objectOutputStream.flush();
-        objectOutputStream.reset();
+//        objectOutputStream.reset();
     }
 
     /**
