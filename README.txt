@@ -10,6 +10,14 @@
 （1）在注入阶段扫描方法上有没有 @Transaction 注解，有的话为该方法创建一个切面（cglib动态代理实现）
 （2）代理方法会在invoke该方法前创建一个connection放到ThreadLocal中，方法内部的sql都会复用ThreadLocal中的connection，出错回滚，不出错提交，实现事务
 
+3.rpc（以实现）：
+（1）使用 @RPCService / application.prop 配置rpc相关的信息
+（2）rpc默认使用zookeeper作为注册中心
+（3）rpc内部使用socket的对象流通信
+（4）socket服务端有最大socket连接数（可配），默认为50个
+（5）socket增加心跳机制，确保不在线的客户端不会占用服务端资源
+（6）socket客户端配置有socket连接池（可配），实现socket连接复用，节省服务器资源
+（7）socket服务端配置了线程池，确保资源利用最大化
 
 新改进：
 
@@ -19,3 +27,6 @@
 （4）prop配置文件加载器
 （5）基于socket的rpc框架
 （6）rpc默认的zookeeper注册中心
+（7）socket增加连接池，和最大连接数限制
+（8）线程池改用lazy模式，并设有线程空闲超时机制，确保线程池中没有太多空闲线程，节省资源
+（9）数据库增加二级缓存机制，二级缓存依赖命名空间，通过 @EnableCache 配置，commit操作刷新命名空间中的缓存（默认使用java的hashmap结构实现），开发者可以自行实现com.framework.db.cache.Cache接口编写缓存类并替换（框架已经通过类名反射（在 @EnableCache 注解中把 cacheImplClass 属性配置成自己的实现类即可）支持自定义缓存类）
