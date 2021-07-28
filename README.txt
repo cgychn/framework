@@ -10,7 +10,7 @@
 （1）在注入阶段扫描方法上有没有 @Transaction 注解，有的话为该方法创建一个切面（cglib动态代理实现）
 （2）代理方法会在invoke该方法前创建一个connection放到ThreadLocal中，方法内部的sql都会复用ThreadLocal中的connection，出错回滚，不出错提交，实现事务
 
-3.rpc（以实现）：
+3.rpc（已实现）：
 （1）使用 @RPCService / application.prop 配置rpc相关的信息
 （2）rpc默认使用zookeeper作为注册中心
 （3）rpc内部使用socket的对象流通信
