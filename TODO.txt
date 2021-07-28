@@ -22,3 +22,6 @@ select * from user where user_id = #{userId} and create_time = #{createTime, jdb
 2021/4/28
 （1）框架中所有工具类配置都抽离到配置文件
 （2）rpc 远程服务需要支持在配置文件中配置，配置文件配置的优先级大于注解配置的优先级 
+
+2021/7/28
+（1）重构sql解析器模块，支持 #{param} 取值表达式和 ${param - 1} 运算表达式
