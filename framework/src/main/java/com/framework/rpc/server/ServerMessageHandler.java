@@ -36,7 +36,7 @@ public class ServerMessageHandler {
         this.socket = socket;
         this.messageSendErrorCallBack = messageSendErrorCallBack;
         // 单独开线程处理
-        new Thread(() -> {
+        MyFrameworkContext.getFrameWorkThreadPool().exeTask(() -> {
             try {
                 while (true) {
                     if (!lastHeartBeatGot.get()) { continue; }
@@ -53,7 +53,7 @@ public class ServerMessageHandler {
                 this.messageSendErrorCallBack.toDo(e);
                 this.isException.set(true);
             }
-        }).start();
+        });
         startListenMessage();
     }
 
