@@ -63,6 +63,7 @@ public class ClientMessageHandler {
      */
     public void sendMessage (Object[] msg, OnMessageCallBack callBack) {
         try {
+            System.out.println("----------------------------------send--------------------" + Thread.currentThread().getName());
             while (callBackHandled.get() == false) {
                 Thread.sleep(10);
             }
@@ -85,6 +86,7 @@ public class ClientMessageHandler {
             objectOutputStream.writeObject(msg[i]);
         }
         objectOutputStream.flush();
+        objectOutputStream.reset();
     }
 
 
@@ -158,17 +160,6 @@ public class ClientMessageHandler {
          * @param obj
          */
         void toDo (Object obj);
-    }
-
-    /**
-     * 发送消息接口，发送消息的逻辑写这里
-     */
-    public interface MsgSender {
-        /**
-         * 值提供输入流对象，在该方法中不允许有I和O的交互，只能写数据，读数据由handler统一处理
-         * @param objectOutputStream
-         */
-        void sendContent (ObjectOutputStream objectOutputStream);
     }
 
     /**

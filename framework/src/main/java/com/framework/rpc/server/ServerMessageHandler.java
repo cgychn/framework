@@ -81,6 +81,10 @@ public class ServerMessageHandler {
                     }
                     // 直到接受到全部的参数，才处理消息
                     handleMessage(implClassName, methodName, paramTypes, args);
+                    implClassName = null;
+                    methodName = null;
+                    paramTypes = null;
+                    args = null;
                 }
             }
         } catch (Exception e) {
@@ -141,6 +145,7 @@ public class ServerMessageHandler {
             objectOutputStream.writeObject(msg[i]);
         }
         objectOutputStream.flush();
+        objectOutputStream.reset();
     }
 
     /**

@@ -53,6 +53,7 @@ public class ClientSocketHandlerPool {
         // 处理连接池中的连接
         synchronized (pool.get(key)) {
             while (true) {
+                System.out.println(pool.get(key));
                 // 链接池中无可用链接且连接池大小已达上限（等待或者直接返回）
                 if (pool.get(key).size() == 0
                         && socketPoolCountMap.get(key).get() == socketPoolMaxCount) {
@@ -104,6 +105,8 @@ public class ClientSocketHandlerPool {
                 pool.get(key).offer(clientMessageHandler);
                 pool.get(key).notifyAll();
             }
+            System.out.println("返回了一个连接，现在的连接数：" + pool.get(key).size());
+            System.out.println(pool.get(key));
         }
     }
 

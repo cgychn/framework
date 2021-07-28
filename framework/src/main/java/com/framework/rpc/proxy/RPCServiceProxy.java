@@ -13,6 +13,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Proxy;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -52,7 +53,7 @@ public class RPCServiceProxy implements InvocationHandler {
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-
+        System.out.println("enter");
         Boolean justReg = MyFrameworkCfgContext.get("framework.myrpc.provide.justRegister", Boolean.class);
         if (justReg != null && justReg == true) {
             // 配置了只注册，就不会再订阅注册中心服务
@@ -91,7 +92,7 @@ public class RPCServiceProxy implements InvocationHandler {
         Integer port = Integer.parseInt(parts[1]);
 
         AtomicReference<Object> val = new AtomicReference<>();
-
+        AtomicBoolean callbackReturned = new AtomicBoolean(false);
         // 通信服务提供者
         ClientMessageHandler handler = clientSocketPool.getSocketHandlerFromPool(ip, port);
         Object[] msg = {className, methodName, methodParamTypes, args};
@@ -100,14 +101,17 @@ public class RPCServiceProxy implements InvocationHandler {
             val.set(obj);
             // 返还socket链接到连接池
             clientSocketPool.returnHandlerToPool(handler, ip, port);
-            synchronized (val) {
-                val.notify();
+            synchronized (callbackReturned) {
+                callbackReturned.set(true);
+                callbackReturned.notify();
             }
         });
 
         // 等待结果返回
-        synchronized (val) {
-            val.wait();
+        synchronized (callbackReturned) {
+            if (!callbackReturned.get()) {
+                callbackReturned.wait();
+            }
         }
 
         // 转化对象并返回
