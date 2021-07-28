@@ -25,6 +25,8 @@ public class ServerMessageHandler {
     // 异常时回调
     private MessageSendErrorCallBack messageSendErrorCallBack;
 
+    private AtomicBoolean lastHeartBeatGot = new AtomicBoolean(true);
+
     /**
      * 绑定
      * @param socket
@@ -33,6 +35,25 @@ public class ServerMessageHandler {
     public void bindSocket (Socket socket, MessageSendErrorCallBack messageSendErrorCallBack) {
         this.socket = socket;
         this.messageSendErrorCallBack = messageSendErrorCallBack;
+        // 单独开线程处理
+        new Thread(() -> {
+            try {
+                while (true) {
+                    if (!lastHeartBeatGot.get()) { continue; }
+                    // 收到心跳后继续 ping（10s后）
+                    Thread.sleep(10000);
+                    HeartBeatPing heartBeatPing = new HeartBeatPing();
+                    heartBeatPing.setMsg("heartbeat request from client");
+                    Object[] msg = {heartBeatPing};
+                    sendMessage(msg);
+                    lastHeartBeatGot.set(false);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                this.messageSendErrorCallBack.toDo(e);
+                this.isException.set(true);
+            }
+        }).start();
         startListenMessage();
     }
 
@@ -97,20 +118,10 @@ public class ServerMessageHandler {
      * @param obj
      */
     public void handleHeartBeat(Object obj) {
+        // 单独开一个线程回复，防止阻塞
         HeartBeatPong heartBeatPong = (HeartBeatPong) obj;
+        lastHeartBeatGot.set(true);
         System.out.println("客户端的心跳回应：" + heartBeatPong.getMsg());
-        // 收到心跳后继续 ping（10s后）
-        try {
-            Thread.sleep(10000);
-            HeartBeatPing heartBeatPing = new HeartBeatPing();
-            heartBeatPing.setMsg("heartbeat request from client");
-            Object[] msg = {heartBeatPing};
-            sendMessage(msg);
-        } catch (Exception e) {
-            e.printStackTrace();
-            this.messageSendErrorCallBack.toDo(e);
-            this.isException.set(true);
-        }
     }
 
     // 服务器目前不需要主动发非心跳消息给客户端，先注掉

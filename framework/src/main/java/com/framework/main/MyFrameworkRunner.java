@@ -7,6 +7,7 @@ import com.framework.context.MyFrameworkContext;
 import com.framework.ioc.ObjectAssembler;
 import com.framework.ioc.injector.*;
 import com.framework.rpc.client.ClientSocketHandlerPool;
+import com.framework.rpc.register.RegisterSelector;
 import com.framework.rpc.server.RpcServer;
 import com.framework.util.ThreadPool;
 
@@ -57,6 +58,13 @@ public class MyFrameworkRunner {
 
         // 装配
         ObjectAssembler.assemble();
+
+        // 先加载注册中心选择器
+        try {
+            Class.forName(RegisterSelector.class.getName());
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
 
         // 启动rpc服务
         try {

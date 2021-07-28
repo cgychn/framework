@@ -22,6 +22,8 @@ public class RegisterSelector {
     private static List<RegistryConfigItem> enabledReg = new ArrayList<>();
 
     static {
+        // 注册所有的配置文件
+        System.out.println("-----------load 配置文件 ---------------");
         findRegistryInCfg();
     }
 
@@ -66,6 +68,7 @@ public class RegisterSelector {
         List<String> regs = MyFrameworkCfgContext.getSubNodes("framework.myrpc.registry")
                 .stream()
                 .collect(Collectors.toList());
+        System.out.println("regs: " + regs);
         if (regs.size() == 0) {
             // 没有注册中心
             System.out.println("未找到已配置的注册中心");
@@ -77,6 +80,7 @@ public class RegisterSelector {
                 List<String> subs = MyFrameworkCfgContext.getSubNodes("framework.myrpc.registry." + regTypeName)
                         .stream()
                         .collect(Collectors.toList());
+                System.out.println(subs);
                 // 这里注册中心的配置如果加了，需要修改
                 if (subs.contains("ips") || subs.contains("timeout")) {
                     // 说明配置没有要使用多个该类型的注册中心
@@ -92,6 +96,7 @@ public class RegisterSelector {
                     switch (regTypeName) {
                         case "zookeeper":
                             // 使用zookeeper注册中心
+                            System.out.println("-------使用zookeeper注册中心");
                             registryConfigItem.setRegistry(new ZookeeperRegistry(registryConfigItem));
                             break;
                         default:

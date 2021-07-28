@@ -47,9 +47,6 @@ public class ClientSocketHandlerPool {
             }
         }
 
-        System.out.println(socketPoolCountMap);
-        System.out.println(pool);
-
         // 处理连接池中的连接
         synchronized (pool.get(key)) {
             while (true) {

@@ -1,7 +1,10 @@
 package com.framework.rpc.client;
 
+import com.framework.context.MyFrameworkContext;
 import com.framework.rpc.hearbeat.HeartBeatPing;
 import com.framework.rpc.hearbeat.HeartBeatPong;
+import com.framework.util.ThreadPool;
+
 import java.io.*;
 import java.net.Socket;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -24,6 +27,8 @@ public class ClientMessageHandler {
     // 该连接是否异常
     private AtomicBoolean isException = new AtomicBoolean(false);
 
+    private static ThreadPool threadPool = MyFrameworkContext.getFrameWorkThreadPool();
+
     /**
      * 给socket对象绑定处理器
      * @param socket
@@ -31,7 +36,7 @@ public class ClientMessageHandler {
     public void bindSocket (Socket socket, MessageSendErrorCallBack messageSendErrorCallBack) {
         this.socket = socket;
         this.messageSendErrorCallBack = messageSendErrorCallBack;
-        new Thread(() -> { this.startListenMessage(); }).start();
+        threadPool.exeTask(() -> { this.startListenMessage(); });
     }
 
     /**
@@ -63,9 +68,7 @@ public class ClientMessageHandler {
      */
     public void sendMessage (Object[] msg, OnMessageCallBack callBack) {
         try {
-            System.out.println("----------------------------------send--------------------" + Thread.currentThread().getName());
             while (callBackHandled.get() == false) {
-                Thread.sleep(10);
             }
             // 设置回调
             if (callBack != null) {

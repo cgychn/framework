@@ -7,16 +7,12 @@ import com.framework.rpc.client.ClientMessageHandler;
 import com.framework.rpc.client.ClientSocketHandlerPool;
 import com.framework.rpc.register.RegisterSelector;
 import com.framework.rpc.register.entiy.RemoteClassEntity;
-
-import java.io.ObjectOutputStream;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Proxy;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 public class RPCServiceProxy implements InvocationHandler {
 
@@ -53,7 +49,7 @@ public class RPCServiceProxy implements InvocationHandler {
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        System.out.println("enter");
+        long startTime = System.currentTimeMillis();
         Boolean justReg = MyFrameworkCfgContext.get("framework.myrpc.provide.justRegister", Boolean.class);
         if (justReg != null && justReg == true) {
             // 配置了只注册，就不会再订阅注册中心服务
@@ -74,7 +70,7 @@ public class RPCServiceProxy implements InvocationHandler {
             // 直连，不通过注册中心找配置，直接向服务提供者索要配置
 
         } else {
-            // 用上面获取到的值到注册中心找
+            // 用上面获取到的值到注册中心找（这里比较卡，原因是要访问zookeeper读取节点信息，这里加缓存）
             remoteClassEntity = RegisterSelector.findRemoteClassInEnabledRegistry(
                     this.serviceName,
                     this.serviceProvider.equals("") ? null : this.serviceProvider,
@@ -96,6 +92,9 @@ public class RPCServiceProxy implements InvocationHandler {
         // 通信服务提供者
         ClientMessageHandler handler = clientSocketPool.getSocketHandlerFromPool(ip, port);
         Object[] msg = {className, methodName, methodParamTypes, args};
+
+        System.out.println("invoke时间：" + (System.currentTimeMillis() - startTime));
+        long sendTime = System.currentTimeMillis();
         handler.sendMessage(msg, (obj) -> {
             // 接受服务提供者返回
             val.set(obj);
@@ -113,7 +112,7 @@ public class RPCServiceProxy implements InvocationHandler {
                 callbackReturned.wait();
             }
         }
-
+        System.out.println("调用时间：" + (System.currentTimeMillis() - sendTime));
         // 转化对象并返回
         return method.getReturnType().cast(val.get());
 

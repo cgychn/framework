@@ -15,7 +15,7 @@ public class ThreadPool {
 	private static List<Runnable> taskQueue = new LinkedList<>();
 	public static AtomicInteger available = new AtomicInteger(0);
 	private static int poolSize = MyFrameworkCfgContext.get("framework.threadPool.size", Integer.class) == null ?
-			10 :
+			36 :
 			MyFrameworkCfgContext.get("framework.threadPool.size", Integer.class);
 	private static ThreadPool instance = null;
 
