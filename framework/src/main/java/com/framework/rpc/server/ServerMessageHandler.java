@@ -3,10 +3,8 @@ package com.framework.rpc.server;
 import com.framework.context.MyFrameworkContext;
 import com.framework.rpc.hearbeat.HeartBeatPing;
 import com.framework.rpc.hearbeat.HeartBeatPong;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
+
+import java.io.*;
 import java.lang.reflect.Method;
 import java.net.Socket;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -18,6 +16,8 @@ public class ServerMessageHandler {
 
     // socket连接
     private Socket socket;
+    private ObjectInputStream objectInputStream;
+    private ObjectOutputStream objectOutputStream;
     // 是否出现异常
     private AtomicBoolean isException = new AtomicBoolean(false);
     // 回调是否已经被处理，如果没有被处理，sendMessage方法将被阻塞，直到被处理
@@ -41,13 +41,15 @@ public class ServerMessageHandler {
      */
     private void startListenMessage() {
         try {
-            InputStream inputStream = this.socket.getInputStream();
-            ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
+            objectOutputStream = getSocketObjectOutputStream();
+            // 主动先发送一个心跳给客户端
+            HeartBeatPing heartBeatPing = new HeartBeatPing();
+            heartBeatPing.setMsg("heartbeat request from client");
+            Object[] msg = {heartBeatPing};
+            sendMessage(msg);
 
-//            String implClassName = (String) objectInputStream.readObject();
-//            String methodName = (String) objectInputStream.readObject();
-//            Class[] paramTypes = (Class[]) objectInputStream.readObject();
-//            Object[] args = (Object[]) objectInputStream.readObject();
+            objectInputStream = getSocketObjectInputStream();
+
             // 必须读取到所有的
             String implClassName = null;
             String methodName = null;
@@ -55,7 +57,6 @@ public class ServerMessageHandler {
             Object[] args = null;
             // 不断读取服务器的数据
             while (true && !isException.get()) {
-                System.out.println("进入循环");
                 Object object = objectInputStream.readObject();
                 System.out.println("读取到obj：" + object);
                 // 判断是否是心跳包
@@ -64,22 +65,18 @@ public class ServerMessageHandler {
                 } else {
                     // 处理正常业务逻辑
                     if (implClassName == null) {
-                        System.out.println("set implClassName");
                         implClassName = (String) object;
                         continue;
                     }
                     if (methodName == null) {
-                        System.out.println("set methodName");
                         methodName = (String) object;
                         continue;
                     }
                     if (paramTypes == null) {
-                        System.out.println("set paramTypes");
                         paramTypes = (Class[]) object;
                         continue;
                     }
                     if (args == null) {
-                        System.out.println("set args");
                         args = (Object[]) object;
                     }
                     // 直到接受到全部的参数，才处理消息
@@ -101,11 +98,10 @@ public class ServerMessageHandler {
         // 收到心跳后继续 ping（10s后）
         try {
             Thread.sleep(10000);
-            ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
             HeartBeatPing heartBeatPing = new HeartBeatPing();
             heartBeatPing.setMsg("heartbeat request from client");
-            objectOutputStream.writeObject(heartBeatPing);
-            objectOutputStream.flush();
+            Object[] msg = {heartBeatPing};
+            sendMessage(msg);
         } catch (Exception e) {
             e.printStackTrace();
             this.messageSendErrorCallBack.toDo(e);
@@ -138,6 +134,15 @@ public class ServerMessageHandler {
 //        }
 //    }
 
+    // 发消息统一在这里发
+    public synchronized void sendMessage (Object[] msg) throws IOException {
+        objectOutputStream = getSocketObjectOutputStream();
+        for (int i = 0; i < msg.length; i ++) {
+            objectOutputStream.writeObject(msg[i]);
+        }
+        objectOutputStream.flush();
+    }
+
     /**
      * 处理消息
      * @param implClassName
@@ -151,15 +156,30 @@ public class ServerMessageHandler {
             Class destCls = Class.forName(implClassName);
             Object bean = MyFrameworkContext.getJustByClass(destCls);
             Method method = destCls.getMethod(methodName, paramTypes);
-            OutputStream outputStream = socket.getOutputStream();
-            ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+            objectOutputStream = getSocketObjectOutputStream();
             // invoke方法后回写给客户端
-            objectOutputStream.writeObject(method.invoke(bean, args));
+            Object[] msg = {method.invoke(bean, args)};
+            sendMessage(msg);
         } catch (Exception e) {
             e.printStackTrace();
             this.messageSendErrorCallBack.toDo(e);
             this.isException.set(true);
         }
+    }
+
+
+    private synchronized ObjectOutputStream getSocketObjectOutputStream () throws IOException {
+        if (this.objectOutputStream == null) {
+            this.objectOutputStream = new ObjectOutputStream(this.socket.getOutputStream());
+        }
+        return this.objectOutputStream;
+    }
+
+    private synchronized ObjectInputStream getSocketObjectInputStream () throws IOException {
+        if (this.objectInputStream == null) {
+            this.objectInputStream = new ObjectInputStream(this.socket.getInputStream());
+        }
+        return this.objectInputStream;
     }
 
 

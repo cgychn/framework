@@ -15,6 +15,8 @@ public class ClientMessageHandler {
     private Socket socket;
     // 绑定的回调
     private OnMessageCallBack callBack;
+    private ObjectInputStream objectInputStream;
+    private ObjectOutputStream objectOutputStream;
     // 回调是否已经被处理，如果没有被处理，sendMessage方法将被阻塞，直到被处理
     private AtomicBoolean callBackHandled = new AtomicBoolean(true);
     // 异常时回调
@@ -37,12 +39,11 @@ public class ClientMessageHandler {
      */
     private void startListenMessage() {
         try {
-            InputStream inputStream = this.socket.getInputStream();
-            ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
+            objectInputStream = getSocketObjectInputStream();
             // 不断读取服务器的数据
             while (true && !isException.get()) {
                 Object object = objectInputStream.readObject();
-                System.out.println("收到返回：" + object);
+                System.out.println("收到回复：" + object);
                 // 判断是否时心跳包
                 if (object instanceof HeartBeatPing) {
                     handleHeartBeat(object);
@@ -57,10 +58,10 @@ public class ClientMessageHandler {
 
     /**
      * 发消息，并处理回复
-     * @param sender
+     * @param msg
      * @param callBack
      */
-    public void sendMessage (MsgSender sender, OnMessageCallBack callBack) {
+    public void sendMessage (Object[] msg, OnMessageCallBack callBack) {
         try {
             while (callBackHandled.get() == false) {
                 Thread.sleep(10);
@@ -70,14 +71,22 @@ public class ClientMessageHandler {
                 this.callBack = callBack;
                 this.callBackHandled.set(false);
             }
-            OutputStream outputStream = this.socket.getOutputStream();
-            sender.sendContent(outputStream);
+            sendMessage(msg);
         } catch (Exception e) {
             e.printStackTrace();
             this.messageSendErrorCallBack.toDo(e);
             this.isException.set(true);
         }
     }
+
+    public synchronized void sendMessage (Object[] msg) throws IOException {
+        objectOutputStream = getSocketObjectOutputStream();
+        for (int i = 0; i < msg.length; i ++) {
+            objectOutputStream.writeObject(msg[i]);
+        }
+        objectOutputStream.flush();
+    }
+
 
     /**
      * 处理心跳
@@ -88,15 +97,29 @@ public class ClientMessageHandler {
             // 给服务器回应，代表自己在线
             HeartBeatPing heartBeatPing = (HeartBeatPing) obj;
             System.out.println("心跳包：" + heartBeatPing.getMsg());
-            ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
             HeartBeatPong heartBeatPong = new HeartBeatPong();
             heartBeatPong.setMsg("heartbeat resp from client");
-            objectOutputStream.writeObject(heartBeatPong);
+            Object[] msg = {heartBeatPong};
+            sendMessage(msg);
         } catch (IOException e) {
             e.printStackTrace();
             this.messageSendErrorCallBack.toDo(e);
             this.isException.set(true);
         }
+    }
+
+    private synchronized ObjectOutputStream getSocketObjectOutputStream () throws IOException {
+        if (this.objectOutputStream == null) {
+            this.objectOutputStream = new ObjectOutputStream(this.socket.getOutputStream());
+        }
+        return this.objectOutputStream;
+    }
+
+    private synchronized ObjectInputStream getSocketObjectInputStream () throws IOException {
+        if (this.objectInputStream == null) {
+            this.objectInputStream = new ObjectInputStream(this.socket.getInputStream());
+        }
+        return this.objectInputStream;
     }
 
     /**
@@ -143,9 +166,9 @@ public class ClientMessageHandler {
     public interface MsgSender {
         /**
          * 值提供输入流对象，在该方法中不允许有I和O的交互，只能写数据，读数据由handler统一处理
-         * @param outputStream
+         * @param objectOutputStream
          */
-        void sendContent (OutputStream outputStream);
+        void sendContent (ObjectOutputStream objectOutputStream);
     }
 
     /**

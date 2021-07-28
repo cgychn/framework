@@ -94,25 +94,8 @@ public class RPCServiceProxy implements InvocationHandler {
 
         // 通信服务提供者
         ClientMessageHandler handler = clientSocketPool.getSocketHandlerFromPool(ip, port);
-        handler.sendMessage((outputStream) -> {
-            try {
-                // 读写流的循序：类名 -> 方法名 -> 参数类型 -> 参数值
-                ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
-                // 写类名
-                objectOutputStream.writeObject(className);
-                // 写方法名
-                objectOutputStream.writeObject(methodName);
-                // 写方法参数类型
-                objectOutputStream.writeObject(methodParamTypes);
-                // 写方法参数值
-                objectOutputStream.writeObject(args);
-                objectOutputStream.flush();
-                System.out.println(className + "," + methodName + "," + methodParamTypes + "," + args);
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }, (obj) -> {
+        Object[] msg = {className, methodName, methodParamTypes, args};
+        handler.sendMessage(msg, (obj) -> {
             // 接受服务提供者返回
             val.set(obj);
             // 返还socket链接到连接池
