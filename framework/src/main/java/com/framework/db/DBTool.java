@@ -167,7 +167,7 @@ public class DBTool {
         System.out.println(args[0].toString());
         System.out.println("sql : " + sql);
         for (int i = 0; i < args.length ; i++) {
-            System.out.println(i);
+            System.out.println(args[i] + " , " + jdbcTypes[i]);
             if (jdbcTypes[i] != null && !jdbcTypes[i].equals("")) {
                 statement.setObject(
                         i + 1,

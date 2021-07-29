@@ -40,4 +40,12 @@ public class TestServiceImp implements TestService {
         return testTableList.get(0);
     }
 
+    @Override
+    public List<TestTable> testSql() {
+        long startTime1 = System.currentTimeMillis();
+        List<TestTable> testTableList = testOneMapper.getRes(0, 10, 10, 1);
+        System.out.println("耗时：" + (System.currentTimeMillis() - startTime1));
+        return testTableList;
+    }
+
 }

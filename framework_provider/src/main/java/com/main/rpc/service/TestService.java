@@ -12,4 +12,6 @@ public interface TestService {
     List<TestTable> testList();
 
     TestTable testOne(Integer id);
+
+    List<TestTable> testSql();
 }

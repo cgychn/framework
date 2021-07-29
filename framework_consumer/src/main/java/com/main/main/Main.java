@@ -17,17 +17,21 @@ public class Main {
 
         TestService testService = MyFrameworkContext.getJustByClass(TestService.class);
 
-        long startTime = System.currentTimeMillis();
-        String res = testService.test("aaa", 0);
-        System.out.println("耗时：" + (System.currentTimeMillis() - startTime));
+//        long startTime = System.currentTimeMillis();
+//        String res = testService.test("aaa", 0);
+//        System.out.println("耗时：" + (System.currentTimeMillis() - startTime));
+//
+//        long startTime1 = System.currentTimeMillis();
+//        String res1 = testService.test("aaa", 0);
+//        System.out.println("耗时：" + (System.currentTimeMillis() - startTime1));
+//
+//        long startTime2 = System.currentTimeMillis();
+//        String res2 = testService.test("aaa", 0);
+//        System.out.println("耗时：" + (System.currentTimeMillis() - startTime2));
 
-        long startTime1 = System.currentTimeMillis();
-        String res1 = testService.test("aaa", 0);
-        System.out.println("耗时：" + (System.currentTimeMillis() - startTime1));
+        List<TestTable> aa = testService.testSql();
 
-        long startTime2 = System.currentTimeMillis();
-        String res2 = testService.test("aaa", 0);
-        System.out.println("耗时：" + (System.currentTimeMillis() - startTime2));
+        System.out.println(aa);
 
 //        new Thread(() -> {
 //            long startTime1 = System.currentTimeMillis();
@@ -67,11 +71,11 @@ public class Main {
 
 //        System.out.println(testService.test("aaa", 123));
 
-        System.out.println("-----------" + res);
-
-        System.out.println("-----------" + res1);
-
-        System.out.println("-----------" + res2);
+//        System.out.println("-----------" + res);
+//
+//        System.out.println("-----------" + res1);
+//
+//        System.out.println("-----------" + res2);
     }
 
 }
