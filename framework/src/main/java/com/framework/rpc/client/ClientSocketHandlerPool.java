@@ -68,7 +68,7 @@ public class ClientSocketHandlerPool {
                     // 新建连接
                     Socket s = new Socket(ip, port);
 
-                    // 给socket绑定处理器，并将handler加入到连接池中，并添加异常处理方法
+                    // 给socket绑定处理器，并将handler加入到连接池中，并添加socket连接异常处理方法，和远端异常处理方法
                     ClientMessageHandler handler = new ClientMessageHandler();
                     handler.bindSocket(s, (err) -> {
                         System.out.println(err);

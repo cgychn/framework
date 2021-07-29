@@ -1,5 +1,6 @@
 package com.framework.rpc.client;
 
+import com.framework.rpc.exception.RPCRemoteException;
 import com.framework.rpc.hearbeat.HeartBeatPing;
 import com.framework.rpc.hearbeat.HeartBeatPong;
 import java.io.*;
@@ -63,8 +64,7 @@ public class ClientMessageHandler {
      */
     public void sendMessage (Object[] msg, OnMessageCallBack callBack) {
         try {
-            while (callBackHandled.get() == false) {
-            }
+            while (callBackHandled.get() == false) {}
             // 设置回调
             if (callBack != null) {
                 this.callBack = callBack;
@@ -169,5 +169,7 @@ public class ClientMessageHandler {
          */
         void toDo (Exception e);
     }
+
+
 
 }

@@ -31,6 +31,8 @@ public class Main {
 
         List<TestTable> aa = testService.testSql();
 
+        testService.testee();
+
         System.out.println(aa);
 
 //        new Thread(() -> {

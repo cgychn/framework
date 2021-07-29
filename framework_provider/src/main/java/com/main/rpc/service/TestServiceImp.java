@@ -48,4 +48,9 @@ public class TestServiceImp implements TestService {
         return testTableList;
     }
 
+    @Override
+    public void testee() {
+        System.out.println("hahahah");
+    }
+
 }

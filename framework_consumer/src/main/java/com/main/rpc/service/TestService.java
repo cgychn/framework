@@ -16,4 +16,6 @@ public interface TestService {
 
     List<TestTable> testSql();
 
+    public void testee ();
+
 }

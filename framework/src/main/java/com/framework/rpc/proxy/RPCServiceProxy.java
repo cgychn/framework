@@ -5,6 +5,7 @@ import com.framework.config.MyFrameworkCfgContext;
 import com.framework.context.MyFrameworkContext;
 import com.framework.rpc.client.ClientMessageHandler;
 import com.framework.rpc.client.ClientSocketHandlerPool;
+import com.framework.rpc.exception.RPCRemoteException;
 import com.framework.rpc.register.RegisterSelector;
 import com.framework.rpc.register.entiy.RemoteClassEntity;
 import java.lang.reflect.InvocationHandler;
@@ -111,6 +112,11 @@ public class RPCServiceProxy implements InvocationHandler {
             if (!callbackReturned.get()) {
                 callbackReturned.wait();
             }
+        }
+        // 是异常
+        if (val.get() instanceof RPCRemoteException && ((RPCRemoteException) val.get()).getServerException()) {
+            // 抛出异常
+            throw (RPCRemoteException) val.get();
         }
         System.out.println("调用时间：" + (System.currentTimeMillis() - sendTime));
         // 转化对象并返回

@@ -1,6 +1,7 @@
 package com.framework.rpc.server;
 
 import com.framework.context.MyFrameworkContext;
+import com.framework.rpc.exception.RPCRemoteException;
 import com.framework.rpc.hearbeat.HeartBeatPing;
 import com.framework.rpc.hearbeat.HeartBeatPong;
 
@@ -150,12 +151,19 @@ public class ServerMessageHandler {
 //    }
 
     // 发消息统一在这里发
-    public synchronized void sendMessage (Object[] msg) throws IOException {
-        objectOutputStream = getSocketObjectOutputStream();
-        for (int i = 0; i < msg.length; i ++) {
-            objectOutputStream.writeObject(msg[i]);
+    public synchronized void sendMessage (Object[] msg) {
+        try {
+            objectOutputStream = getSocketObjectOutputStream();
+            for (int i = 0; i < msg.length; i++) {
+                objectOutputStream.writeObject(msg[i]);
+            }
+            objectOutputStream.flush();
+        } catch (Exception e) {
+            // 发送消息报错关闭socket
+            e.printStackTrace();
+            this.messageSendErrorCallBack.toDo(e);
+            this.isException.set(true);
         }
-        objectOutputStream.flush();
 //        objectOutputStream.reset();
     }
 
@@ -178,8 +186,10 @@ public class ServerMessageHandler {
             sendMessage(msg);
         } catch (Exception e) {
             e.printStackTrace();
-            this.messageSendErrorCallBack.toDo(e);
-            this.isException.set(true);
+            // 报错发异常信息给client
+            RPCRemoteException rpcRemoteException = new RPCRemoteException(e.getMessage());
+            rpcRemoteException.setServerException(true);
+            sendMessage(new Object[]{rpcRemoteException});
         }
     }
 
