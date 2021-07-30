@@ -1,8 +1,8 @@
 package com.framework.rpc.client;
 
-import com.framework.rpc.exception.RPCRemoteException;
-import com.framework.rpc.hearbeat.HeartBeatPing;
-import com.framework.rpc.hearbeat.HeartBeatPong;
+import com.framework.rpc.entity.RemoteResultBean;
+import com.framework.rpc.entity.hearbeat.HeartBeatPing;
+import com.framework.rpc.entity.hearbeat.HeartBeatPong;
 import java.io.*;
 import java.net.Socket;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -44,12 +44,16 @@ public class ClientMessageHandler {
             // 不断读取服务器的数据
             while (true && !isException.get()) {
                 Object object = objectInputStream.readObject();
+                if (!(object instanceof RemoteResultBean)) {
+                    continue;
+                }
                 System.out.println("收到回复：" + object);
+                RemoteResultBean remoteResultBean = (RemoteResultBean) object;
                 // 判断是否时心跳包
-                if (object instanceof HeartBeatPing) {
-                    handleHeartBeat(object);
+                if (remoteResultBean.getHeartBeatPing() != null) {
+                    handleHeartBeat(remoteResultBean);
                 } else {
-                    handleMessage(object);
+                    handleMessage(remoteResultBean);
                 }
             }
         } catch (Exception e) {
@@ -59,10 +63,10 @@ public class ClientMessageHandler {
 
     /**
      * 发消息，并处理回复
-     * @param msg
+     * @param remoteResultBean
      * @param callBack
      */
-    public void sendMessage (Object[] msg, OnMessageCallBack callBack) {
+    public void sendMessage (RemoteResultBean remoteResultBean, OnMessageCallBack callBack) {
         try {
             while (callBackHandled.get() == false) {}
             // 设置回调
@@ -70,7 +74,7 @@ public class ClientMessageHandler {
                 this.callBack = callBack;
                 this.callBackHandled.set(false);
             }
-            sendMessage(msg);
+            sendMessage(remoteResultBean);
         } catch (Exception e) {
             e.printStackTrace();
             this.messageSendErrorCallBack.toDo(e);
@@ -78,11 +82,10 @@ public class ClientMessageHandler {
         }
     }
 
-    public synchronized void sendMessage (Object[] msg) throws IOException {
+    public synchronized void sendMessage (RemoteResultBean remoteResultBean) throws IOException {
+        System.out.println("发送请求：" + remoteResultBean);
         objectOutputStream = getSocketObjectOutputStream();
-        for (int i = 0; i < msg.length; i ++) {
-            objectOutputStream.writeObject(msg[i]);
-        }
+        objectOutputStream.writeObject(remoteResultBean);
         objectOutputStream.flush();
 //        objectOutputStream.reset();
     }
@@ -90,17 +93,18 @@ public class ClientMessageHandler {
 
     /**
      * 处理心跳
-     * @param obj
+     * @param remoteResultBean
      */
-    public void handleHeartBeat(Object obj) {
+    public void handleHeartBeat(RemoteResultBean remoteResultBean) {
         try {
             // 给服务器回应，代表自己在线
-            HeartBeatPing heartBeatPing = (HeartBeatPing) obj;
+            HeartBeatPing heartBeatPing = remoteResultBean.getHeartBeatPing();
             System.out.println("心跳包：" + heartBeatPing.getMsg());
             HeartBeatPong heartBeatPong = new HeartBeatPong();
             heartBeatPong.setMsg("heartbeat resp from client");
-            Object[] msg = {heartBeatPong};
-            sendMessage(msg);
+            RemoteResultBean remoteResultBeanForHeartbeatPong = new RemoteResultBean();
+            remoteResultBeanForHeartbeatPong.setHeartBeatPong(heartBeatPong);
+            sendMessage(remoteResultBeanForHeartbeatPong);
         } catch (IOException e) {
             e.printStackTrace();
             this.messageSendErrorCallBack.toDo(e);
@@ -140,11 +144,11 @@ public class ClientMessageHandler {
 
     /**
      * 处理正常消息
-     * @param obj
+     * @param remoteResultBean
      */
-    public void handleMessage(Object obj) {
+    public void handleMessage(RemoteResultBean remoteResultBean) {
         if (this.callBack != null) {
-            this.callBack.toDo(obj);
+            this.callBack.toDo(remoteResultBean);
             this.callBackHandled.set(true);
         }
     }
@@ -157,7 +161,7 @@ public class ClientMessageHandler {
          * 服务器读取到的对象
          * @param obj
          */
-        void toDo (Object obj);
+        void toDo (RemoteResultBean obj);
     }
 
     /**

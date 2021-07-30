@@ -17,9 +17,9 @@ public class Main {
 
         TestService testService = MyFrameworkContext.getJustByClass(TestService.class);
 
-//        long startTime = System.currentTimeMillis();
-//        String res = testService.test("aaa", 0);
-//        System.out.println("耗时：" + (System.currentTimeMillis() - startTime));
+        long startTime = System.currentTimeMillis();
+        String res = testService.test("aaa", 0);
+        System.out.println("耗时：" + (System.currentTimeMillis() - startTime));
 //
 //        long startTime1 = System.currentTimeMillis();
 //        String res1 = testService.test("aaa", 0);
@@ -29,11 +29,11 @@ public class Main {
 //        String res2 = testService.test("aaa", 0);
 //        System.out.println("耗时：" + (System.currentTimeMillis() - startTime2));
 
-        List<TestTable> aa = testService.testSql();
-
-        testService.testee();
-
-        System.out.println(aa);
+//        List<TestTable> aa = testService.testSql();
+//
+//        testService.testee();
+//
+//        System.out.println(aa);
 
 //        new Thread(() -> {
 //            long startTime1 = System.currentTimeMillis();
@@ -41,9 +41,9 @@ public class Main {
 //            System.out.println("多线程中输出1--- " + l + "，耗时：" + (startTime1 - System.currentTimeMillis()));
 //        }).start();
 
-//        long startTime1 = System.currentTimeMillis();
-//        List<TestTable> res1 = testService.testList();
-//        System.out.println("耗时：" + (System.currentTimeMillis() - startTime1));
+        long startTime1 = System.currentTimeMillis();
+        List<TestTable> res1 = testService.testList();
+        System.out.println("耗时：" + (System.currentTimeMillis() - startTime1));
 
 //        new Thread(() -> {
 //            long startTime1 = System.currentTimeMillis();
@@ -51,9 +51,9 @@ public class Main {
 //            System.out.println("多线程中输出2--- " + l + "，耗时：" + (startTime1 - System.currentTimeMillis()));
 //        }).start();
 
-//        long startTime2 = System.currentTimeMillis();
-//        TestTable res2 = testService.testOne(0);
-//        System.out.println("耗时：" + (System.currentTimeMillis() - startTime2));
+        long startTime2 = System.currentTimeMillis();
+        TestTable res2 = testService.testOne(0);
+        System.out.println("耗时：" + (System.currentTimeMillis() - startTime2));
 
 //        new Thread(() -> {
 //            long startTime1 = System.currentTimeMillis();
@@ -71,13 +71,13 @@ public class Main {
 //            System.out.println("多线程中输出5--- " + l + "，耗时：" + (startTime1 - System.currentTimeMillis()));
 //        }).start();
 
-//        System.out.println(testService.test("aaa", 123));
+        System.out.println(testService.test("aaa", 123));
 
-//        System.out.println("-----------" + res);
-//
-//        System.out.println("-----------" + res1);
-//
-//        System.out.println("-----------" + res2);
+        System.out.println("-----------" + res);
+
+        System.out.println("-----------" + res1);
+
+        System.out.println("-----------" + res2);
     }
 
 }

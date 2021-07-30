@@ -1,9 +1,10 @@
 package com.framework.rpc.server;
 
 import com.framework.context.MyFrameworkContext;
+import com.framework.rpc.entity.RemoteResultBean;
 import com.framework.rpc.exception.RPCRemoteException;
-import com.framework.rpc.hearbeat.HeartBeatPing;
-import com.framework.rpc.hearbeat.HeartBeatPong;
+import com.framework.rpc.entity.hearbeat.HeartBeatPing;
+import com.framework.rpc.entity.hearbeat.HeartBeatPong;
 
 import java.io.*;
 import java.lang.reflect.Method;
@@ -45,8 +46,10 @@ public class ServerMessageHandler {
                     Thread.sleep(10000);
                     HeartBeatPing heartBeatPing = new HeartBeatPing();
                     heartBeatPing.setMsg("heartbeat request from client");
-                    Object[] msg = {heartBeatPing};
-                    sendMessage(msg);
+                    // 包装
+                    RemoteResultBean remoteResultBeanForHeartbeatPing = new RemoteResultBean();
+                    remoteResultBeanForHeartbeatPing.setHeartBeatPing(heartBeatPing);
+                    sendMessage(remoteResultBeanForHeartbeatPing);
                     lastHeartBeatGot.set(false);
                 }
             } catch (Exception e) {
@@ -63,50 +66,42 @@ public class ServerMessageHandler {
      */
     private void startListenMessage() {
         try {
-            objectOutputStream = getSocketObjectOutputStream();
+
             // 主动先发送一个心跳给客户端
             HeartBeatPing heartBeatPing = new HeartBeatPing();
             heartBeatPing.setMsg("heartbeat request from client");
-            Object[] msg = {heartBeatPing};
-            sendMessage(msg);
+            // 包装ping
+            RemoteResultBean remoteResultBeanForHeartbeatPing = new RemoteResultBean();
+            remoteResultBeanForHeartbeatPing.setHeartBeatPing(heartBeatPing);
+            sendMessage(remoteResultBeanForHeartbeatPing);
 
             objectInputStream = getSocketObjectInputStream();
 
             // 必须读取到所有的
-            String implClassName = null;
-            String methodName = null;
-            Class[] paramTypes = null;
-            Object[] args = null;
+            String implClassName;
+            String methodName;
+            Class[] paramTypes;
+            Object[] args;
             // 不断读取服务器的数据
             while (true && !isException.get()) {
                 Object object = objectInputStream.readObject();
+                if (!(object instanceof RemoteResultBean)) {
+                    // 不处理非包装类
+                    continue;
+                }
                 System.out.println("读取到obj：" + object);
+                RemoteResultBean remoteResultBean = (RemoteResultBean) object;
                 // 判断是否是心跳包
-                if (object instanceof HeartBeatPong) {
-                    handleHeartBeat(object);
+                if (remoteResultBean.getHeartBeatPong() != null) {
+                    handleHeartBeat(remoteResultBean);
                 } else {
                     // 处理正常业务逻辑
-                    if (implClassName == null) {
-                        implClassName = (String) object;
-                        continue;
-                    }
-                    if (methodName == null) {
-                        methodName = (String) object;
-                        continue;
-                    }
-                    if (paramTypes == null) {
-                        paramTypes = (Class[]) object;
-                        continue;
-                    }
-                    if (args == null) {
-                        args = (Object[]) object;
-                    }
+                    implClassName = (String) remoteResultBean.getObjs()[0];
+                    methodName = (String) remoteResultBean.getObjs()[1];
+                    paramTypes = (Class[]) remoteResultBean.getObjs()[2];
+                    args = (Object[]) remoteResultBean.getObjs()[3];
                     // 直到接受到全部的参数，才处理消息
                     handleMessage(implClassName, methodName, paramTypes, args);
-                    implClassName = null;
-                    methodName = null;
-                    paramTypes = null;
-                    args = null;
                 }
             }
         } catch (Exception e) {
@@ -116,11 +111,11 @@ public class ServerMessageHandler {
 
     /**
      * 处理心跳
-     * @param obj
+     * @param remoteResultBean
      */
-    public void handleHeartBeat(Object obj) {
+    public void handleHeartBeat(RemoteResultBean remoteResultBean) {
         // 单独开一个线程回复，防止阻塞
-        HeartBeatPong heartBeatPong = (HeartBeatPong) obj;
+        HeartBeatPong heartBeatPong = remoteResultBean.getHeartBeatPong();
         lastHeartBeatGot.set(true);
         System.out.println("客户端的心跳回应：" + heartBeatPong.getMsg());
     }
@@ -151,12 +146,11 @@ public class ServerMessageHandler {
 //    }
 
     // 发消息统一在这里发
-    public synchronized void sendMessage (Object[] msg) {
+    public synchronized void sendMessage (RemoteResultBean remoteResultBean) {
         try {
+            System.out.println("发送请求：" + remoteResultBean);
             objectOutputStream = getSocketObjectOutputStream();
-            for (int i = 0; i < msg.length; i++) {
-                objectOutputStream.writeObject(msg[i]);
-            }
+            objectOutputStream.writeObject(remoteResultBean);
             objectOutputStream.flush();
         } catch (Exception e) {
             // 发送消息报错关闭socket
@@ -180,16 +174,21 @@ public class ServerMessageHandler {
             Class destCls = Class.forName(implClassName);
             Object bean = MyFrameworkContext.getJustByClass(destCls);
             Method method = destCls.getMethod(methodName, paramTypes);
-            objectOutputStream = getSocketObjectOutputStream();
             // invoke方法后回写给客户端
             Object[] msg = {method.invoke(bean, args)};
-            sendMessage(msg);
+            RemoteResultBean remoteResultBean = new RemoteResultBean();
+            remoteResultBean.setObjs(msg);
+            System.out.println("sendMessage：" + remoteResultBean);
+            sendMessage(remoteResultBean);
         } catch (Exception e) {
             e.printStackTrace();
             // 报错发异常信息给client
             RPCRemoteException rpcRemoteException = new RPCRemoteException(e.getMessage());
             rpcRemoteException.setServerException(true);
-            sendMessage(new Object[]{rpcRemoteException});
+            // 包装异常类
+            RemoteResultBean remoteResultBean = new RemoteResultBean();
+            remoteResultBean.setRpcRemoteException(rpcRemoteException);
+            sendMessage(remoteResultBean);
         }
     }
 

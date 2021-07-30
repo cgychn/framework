@@ -1,4 +1,4 @@
-package com.framework.rpc.hearbeat;
+package com.framework.rpc.entity.hearbeat;
 
 import java.io.Serializable;
 

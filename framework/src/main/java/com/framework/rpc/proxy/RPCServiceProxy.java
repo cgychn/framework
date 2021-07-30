@@ -5,6 +5,7 @@ import com.framework.config.MyFrameworkCfgContext;
 import com.framework.context.MyFrameworkContext;
 import com.framework.rpc.client.ClientMessageHandler;
 import com.framework.rpc.client.ClientSocketHandlerPool;
+import com.framework.rpc.entity.RemoteResultBean;
 import com.framework.rpc.exception.RPCRemoteException;
 import com.framework.rpc.register.RegisterSelector;
 import com.framework.rpc.register.entiy.RemoteClassEntity;
@@ -88,7 +89,7 @@ public class RPCServiceProxy implements InvocationHandler {
         String ip = parts[0];
         Integer port = Integer.parseInt(parts[1]);
 
-        AtomicReference<Object> val = new AtomicReference<>();
+        AtomicReference<RemoteResultBean> val = new AtomicReference<>();
         AtomicBoolean callbackReturned = new AtomicBoolean(false);
         // 通信服务提供者
         ClientMessageHandler handler = clientSocketPool.getSocketHandlerFromPool(ip, port);
@@ -96,9 +97,12 @@ public class RPCServiceProxy implements InvocationHandler {
 
         System.out.println("invoke时间：" + (System.currentTimeMillis() - startTime));
         long sendTime = System.currentTimeMillis();
-        handler.sendMessage(msg, (obj) -> {
+        // 用包装类包装一下
+        RemoteResultBean remoteResultBean = new RemoteResultBean();
+        remoteResultBean.setObjs(msg);
+        handler.sendMessage(remoteResultBean, (res) -> {
             // 接受服务提供者返回
-            val.set(obj);
+            val.set(res);
             // 返还socket链接到连接池
             clientSocketPool.returnHandlerToPool(handler, ip, port);
             synchronized (callbackReturned) {
@@ -114,13 +118,13 @@ public class RPCServiceProxy implements InvocationHandler {
             }
         }
         // 是异常
-        if (val.get() instanceof RPCRemoteException && ((RPCRemoteException) val.get()).getServerException()) {
+        if (val.get().getRpcRemoteException() != null && val.get().getRpcRemoteException().getServerException()) {
             // 抛出异常
-            throw (RPCRemoteException) val.get();
+            throw val.get().getRpcRemoteException();
         }
         System.out.println("调用时间：" + (System.currentTimeMillis() - sendTime));
         // 转化对象并返回
-        return method.getReturnType().cast(val.get());
+        return method.getReturnType().cast(val.get().getObjs()[0]);
 
     }
 }
