@@ -7,19 +7,24 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-//framework.threadPool.size
+//framework.serverSocketThreadPool.size
 
+/**
+ * 服务端socket专用连接池，建议设置为：订阅该服务的服务的数量 * 2 * 订阅该服务的服务与该服务建立的最大socket数量，如：
+ * 有 n 个服务订阅了该服务，n 个服务中每个服务与给服务建立的socket连接数量最大为 m ，则 framework.serverSocketThreadPool.size 设置为 n * 2 * m
+ */
 public class ThreadPool {
 
 	private static List<MyTask> threads = new ArrayList();
 	private static List<Runnable> taskQueue = new LinkedList<>();
 	public static AtomicInteger available = new AtomicInteger(0);
-	private static int poolSize = MyFrameworkCfgContext.get("framework.threadPool.size", Integer.class) == null ?
-			36 :
-			MyFrameworkCfgContext.get("framework.threadPool.size", Integer.class);
+	//
+	private static int poolSize = MyFrameworkCfgContext.get("framework.serverSocketThreadPool.size", Integer.class) == null ?
+			72 :
+			MyFrameworkCfgContext.get("framework.serverSocketThreadPool.size", Integer.class);
 	private static ThreadPool instance = null;
 
-	private ThreadPool () {}
+	private ThreadPool() {}
 
 	/**
 	 * 拿线程池的单例
@@ -89,6 +94,7 @@ public class ThreadPool {
 	 */
 	public void exeTask(Runnable thread) {
 		synchronized (taskQueue) {
+			System.out.println(taskQueue.size() + " , " + available.get() + " , " + threads.size());
 			taskQueue.add(thread);
 			if (taskQueue.size() > available.get()) {
 				addFreeThreadToPool();

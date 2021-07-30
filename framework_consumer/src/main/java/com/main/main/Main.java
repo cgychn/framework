@@ -7,11 +7,12 @@ import com.main.entity.TestTable;
 import com.main.rpc.service.TestService;
 
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 @FrameworkStarter
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
 
         MyFrameworkRunner.run("com.main");
 
@@ -55,21 +56,108 @@ public class Main {
         TestTable res2 = testService.testOne(0);
         System.out.println("耗时：" + (System.currentTimeMillis() - startTime2));
 
-//        new Thread(() -> {
-//            long startTime1 = System.currentTimeMillis();
-//            TestTable l = testService.testOne(0);
-//            System.out.println("多线程中输出3--- " + l + "，耗时：" + (startTime1 - System.currentTimeMillis()));
-//        }).start();
-//        new Thread(() -> {
-//            long startTime1 = System.currentTimeMillis();
-//            String l = testService.test("bbbwww", 0);
-//            System.out.println("多线程中输出4--- " + l + "，耗时：" + (startTime1 - System.currentTimeMillis()));
-//        }).start();
-//        new Thread(() -> {
-//            long startTime1 = System.currentTimeMillis();
-//            List<TestTable> l = testService.testList();
-//            System.out.println("多线程中输出5--- " + l + "，耗时：" + (startTime1 - System.currentTimeMillis()));
-//        }).start();
+        CountDownLatch countDownLatch = new CountDownLatch(9);
+
+        new Thread(() -> {
+            try {
+                long startTime11 = System.currentTimeMillis();
+                TestTable l = testService.testOne(0);
+                System.out.println("多线程中输出3--- " + l + "，耗时：" + (startTime11 - System.currentTimeMillis()));
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                countDownLatch.countDown();
+            }
+        }).start();
+        new Thread(() -> {
+            try {
+                long startTime12 = System.currentTimeMillis();
+                String l = testService.test("bbbwww", 0);
+                System.out.println("多线程中输出4--- " + l + "，耗时：" + (startTime12 - System.currentTimeMillis()));
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                countDownLatch.countDown();
+            }
+        }).start();
+        new Thread(() -> {
+            try {
+                long startTime13 = System.currentTimeMillis();
+                List<TestTable> l = testService.testList();
+                System.out.println("多线程中输出5--- " + l + "，耗时：" + (startTime13 - System.currentTimeMillis()));
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                countDownLatch.countDown();
+            }
+        }).start();
+        new Thread(() -> {
+            try {
+                long startTime11 = System.currentTimeMillis();
+                TestTable l = testService.testOne(0);
+                System.out.println("多线程中输出6--- " + l + "，耗时：" + (startTime11 - System.currentTimeMillis()));
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                countDownLatch.countDown();
+            }
+        }).start();
+        new Thread(() -> {
+            try {
+                long startTime12 = System.currentTimeMillis();
+                String l = testService.test("bbbwww", 0);
+                System.out.println("多线程中输出7--- " + l + "，耗时：" + (startTime12 - System.currentTimeMillis()));
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                countDownLatch.countDown();
+            }
+        }).start();
+        new Thread(() -> {
+            try {
+                long startTime13 = System.currentTimeMillis();
+                List<TestTable> l = testService.testList();
+                System.out.println("多线程中输出8--- " + l + "，耗时：" + (startTime13 - System.currentTimeMillis()));
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                countDownLatch.countDown();
+            }
+        }).start();
+        new Thread(() -> {
+            try {
+                long startTime11 = System.currentTimeMillis();
+                TestTable l = testService.testOne(0);
+                System.out.println("多线程中输出9--- " + l + "，耗时：" + (startTime11 - System.currentTimeMillis()));
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                countDownLatch.countDown();
+            }
+        }).start();
+        new Thread(() -> {
+            try {
+                long startTime12 = System.currentTimeMillis();
+                String l = testService.test("bbbwww", 0);
+                System.out.println("多线程中输出10--- " + l + "，耗时：" + (startTime12 - System.currentTimeMillis()));
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                countDownLatch.countDown();
+            }
+        }).start();
+        new Thread(() -> {
+            try {
+                long startTime13 = System.currentTimeMillis();
+                List<TestTable> l = testService.testList();
+                System.out.println("多线程中输出11--- " + l + "，耗时：" + (startTime13 - System.currentTimeMillis()));
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                countDownLatch.countDown();
+            }
+        }).start();
+
 
         System.out.println(testService.test("aaa", 123));
 
@@ -78,6 +166,10 @@ public class Main {
         System.out.println("-----------" + res1);
 
         System.out.println("-----------" + res2);
+
+        countDownLatch.await();
+
+//        Thread.sleep(100000);
     }
 
 }

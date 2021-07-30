@@ -20,9 +20,16 @@ public class RPCTask implements Runnable {
     @Override
     public void run() {
         // 给socket绑定处理器
-        this.serverMessageHandler.bindSocket(socket, (err) -> {
-            System.out.println(err);
-            onlineSocketCount.getAndAdd(-1);
+        this.serverMessageHandler.bindSocket(socket, (err, exceptionHandled) -> {
+            synchronized (exceptionHandled) {
+                // 防止异常重复处理
+                if (!exceptionHandled.get()) {
+                    System.out.println(err);
+                    onlineSocketCount.getAndAdd(-1);
+                    System.out.println("异常处理方法处理了一个连接：" + onlineSocketCount.get());
+                    exceptionHandled.set(true);
+                }
+            }
         });
     }
 }

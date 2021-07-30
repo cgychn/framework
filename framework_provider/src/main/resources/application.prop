@@ -13,7 +13,7 @@ framework.db.connPoolSize = 10
 framework.db.userName = njtj
 framework.db.password = njtj
 framework.db.driverName = com.mysql.jdbc.Driver
-framework.threadPool.size = 10
+framework.serverSocketThreadPool.size = 10
 framework.db.url = jdbc:mysql://192.168.85.31:3306/my_test?rewriteBatchedStatements=true&characterEncoding=utf8&serverTimezone=GMT&autoReconnect=true&failOverReadOnly=false&zeroDateTimeBehavior=convertToNull&useSSL=false
 
 # 消费服务（当服务在配置文件中声名时，文件配置文件中的配置将自动替换注解中的配置文件）

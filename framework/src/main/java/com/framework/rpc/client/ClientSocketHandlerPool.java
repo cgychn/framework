@@ -70,11 +70,18 @@ public class ClientSocketHandlerPool {
 
                     // 给socket绑定处理器，并将handler加入到连接池中，并添加socket连接异常处理方法，和远端异常处理方法
                     ClientMessageHandler handler = new ClientMessageHandler();
-                    handler.bindSocket(s, (err) -> {
-                        System.out.println(err);
-                        synchronized (pool.get(key)) {
-                            pool.get(key).remove(handler);
-                            socketPoolCountMap.get(key).getAndAdd(-1);
+                    handler.bindSocket(s, (err, isExceptionHandled) -> {
+                        synchronized (isExceptionHandled) {
+                            // 防止异常重复处理
+                            if (!isExceptionHandled.get()) {
+                                System.out.println(err);
+                                synchronized (pool.get(key)) {
+                                    pool.get(key).remove(handler);
+                                    socketPoolCountMap.get(key).getAndAdd(-1);
+                                }
+                                System.out.println("异常处理方法处理了一个连接：" + pool.get(key).size() + " , " + socketPoolCountMap.get(key).get());
+                                isExceptionHandled.set(true);
+                            }
                         }
                     });
 

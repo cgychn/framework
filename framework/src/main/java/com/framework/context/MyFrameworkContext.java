@@ -67,10 +67,7 @@ public class MyFrameworkContext {
     }
 
     public static <T> T get (Class<T> cls, String name) {
-//        System.out.println("cls :" + cls);
-//        System.out.println("name :" + name);
         for (IocEntity iocEntity : myContainer) {
-//            System.out.println("ioc type :" + iocEntity.getType());
             if (
                     (cls == iocEntity.getType() && name.equals(iocEntity.getName()))
                     || (

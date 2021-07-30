@@ -24,6 +24,8 @@ public class ClientMessageHandler {
     private MessageSendErrorCallBack messageSendErrorCallBack;
     // 该连接是否异常
     private AtomicBoolean isException = new AtomicBoolean(false);
+    // 异常是否被处理
+    private AtomicBoolean isExceptionHandled = new AtomicBoolean(false);
 
     /**
      * 给socket对象绑定处理器
@@ -58,6 +60,10 @@ public class ClientMessageHandler {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            // 可能远端关闭了socket，中止当前socket，并停止当前线程
+            this.messageSendErrorCallBack.toDo(e, isExceptionHandled);
+            this.isException.set(true);
+            this.callBack.toDo(null);
         }
     }
 
@@ -77,8 +83,9 @@ public class ClientMessageHandler {
             sendMessage(remoteResultBean);
         } catch (Exception e) {
             e.printStackTrace();
-            this.messageSendErrorCallBack.toDo(e);
+            this.messageSendErrorCallBack.toDo(e, isExceptionHandled);
             this.isException.set(true);
+            this.callBack.toDo(null);
         }
     }
 
@@ -107,8 +114,9 @@ public class ClientMessageHandler {
             sendMessage(remoteResultBeanForHeartbeatPong);
         } catch (IOException e) {
             e.printStackTrace();
-            this.messageSendErrorCallBack.toDo(e);
+            this.messageSendErrorCallBack.toDo(e, this.isExceptionHandled);
             this.isException.set(true);
+            this.callBack.toDo(null);
         }
     }
 
@@ -171,7 +179,7 @@ public class ClientMessageHandler {
         /**
          * 回调方法，返回异常
          */
-        void toDo (Exception e);
+        void toDo (Exception e, AtomicBoolean isExceptionHandled);
     }
 
 

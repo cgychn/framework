@@ -22,12 +22,13 @@ public class ServerMessageHandler {
     private ObjectOutputStream objectOutputStream;
     // 是否出现异常
     private AtomicBoolean isException = new AtomicBoolean(false);
-    // 回调是否已经被处理，如果没有被处理，sendMessage方法将被阻塞，直到被处理
-//    private AtomicBoolean callBackHandled = new AtomicBoolean(true);
     // 异常时回调
     private MessageSendErrorCallBack messageSendErrorCallBack;
-
     private AtomicBoolean lastHeartBeatGot = new AtomicBoolean(true);
+    // 最后一次处理消息的时间（socket增加空闲超时机制）
+    private long lastHandleMessageTime = System.currentTimeMillis();
+    // socket异常是否已经被处理（socket异常只能被处理一次）
+    private AtomicBoolean isExceptionHandled = new AtomicBoolean(false);
 
     /**
      * 绑定
@@ -37,10 +38,10 @@ public class ServerMessageHandler {
     public void bindSocket (Socket socket, MessageSendErrorCallBack messageSendErrorCallBack) {
         this.socket = socket;
         this.messageSendErrorCallBack = messageSendErrorCallBack;
-        // 单独开线程处理
+        // 单独开线程处理（一个serverSocketHandler会占用两个线程，一个负责发心跳，一个负责处理业务逻辑）
         MyFrameworkContext.getFrameWorkThreadPool().exeTask(() -> {
             try {
-                while (true) {
+                while (true && !isException.get()) {
                     if (!lastHeartBeatGot.get()) { continue; }
                     // 收到心跳后继续 ping（10s后）
                     Thread.sleep(10000);
@@ -54,7 +55,7 @@ public class ServerMessageHandler {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                this.messageSendErrorCallBack.toDo(e);
+                this.messageSendErrorCallBack.toDo(e, this.isExceptionHandled);
                 this.isException.set(true);
             }
         });
@@ -66,17 +67,15 @@ public class ServerMessageHandler {
      */
     private void startListenMessage() {
         try {
-
             // 主动先发送一个心跳给客户端
             HeartBeatPing heartBeatPing = new HeartBeatPing();
-            heartBeatPing.setMsg("heartbeat request from client");
+            heartBeatPing.setMsg("heartbeat request from server");
             // 包装ping
             RemoteResultBean remoteResultBeanForHeartbeatPing = new RemoteResultBean();
             remoteResultBeanForHeartbeatPing.setHeartBeatPing(heartBeatPing);
             sendMessage(remoteResultBeanForHeartbeatPing);
 
             objectInputStream = getSocketObjectInputStream();
-
             // 必须读取到所有的
             String implClassName;
             String methodName;
@@ -84,7 +83,14 @@ public class ServerMessageHandler {
             Object[] args;
             // 不断读取服务器的数据
             while (true && !isException.get()) {
+                System.out.println(lastHandleMessageTime + " || " + (System.currentTimeMillis() - 30000));
+                if (lastHandleMessageTime < System.currentTimeMillis() - 30000) {
+                    // 如果这个信道空闲了30s，就关闭socket（超时机制）
+                    socket.close();
+                    return;
+                }
                 Object object = objectInputStream.readObject();
+                System.out.println("obj : " + object);
                 if (!(object instanceof RemoteResultBean)) {
                     // 不处理非包装类
                     continue;
@@ -106,6 +112,8 @@ public class ServerMessageHandler {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            this.messageSendErrorCallBack.toDo(e, this.isExceptionHandled);
+            this.isException.set(true);
         }
     }
 
@@ -155,7 +163,7 @@ public class ServerMessageHandler {
         } catch (Exception e) {
             // 发送消息报错关闭socket
             e.printStackTrace();
-            this.messageSendErrorCallBack.toDo(e);
+            this.messageSendErrorCallBack.toDo(e, this.isExceptionHandled);
             this.isException.set(true);
         }
 //        objectOutputStream.reset();
@@ -170,6 +178,8 @@ public class ServerMessageHandler {
      */
     public void handleMessage(String implClassName, String methodName, Class[] paramTypes, Object[] args) {
         try {
+            // 更新处理消息时间
+            lastHandleMessageTime = System.currentTimeMillis();
             // 读写流的循序：类名 -> 方法名 -> 参数类型 -> 参数值
             Class destCls = Class.forName(implClassName);
             Object bean = MyFrameworkContext.getJustByClass(destCls);
@@ -215,6 +225,6 @@ public class ServerMessageHandler {
         /**
          * 回调方法，返回异常
          */
-        void toDo (Exception e);
+        void toDo (Exception e, AtomicBoolean exceptionHandled);
     }
 }
